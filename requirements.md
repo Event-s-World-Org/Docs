@@ -27,7 +27,7 @@ The system empowers all users under a Role-Based Access Control (RBAC) scheme, w
 
 2. **Organizer (Event Creator):**
 
-* *Access:* Internal management view for events they have created.
+* *Access:* Internal management view for events they have created, of course. They has to be already logged in.
 * *Capabilities:* Full control over logistics and definition of additional required fields. Has exclusive access to the **Event Balance** and is the main role authorized to manage their own events .
 
 ---
@@ -49,14 +49,14 @@ The system empowers all users under a Role-Based Access Control (RBAC) scheme, w
 
 ## Module 1: Authentication, Registration, and Profile
 
-* **FR-01.1 (Base Registration):** The main account on the platform will be created by requiring: Email, Password, Full Name, Date of Birth, and a unique Username.
+* **FR-01.1 (Base Registration):** The main account on the platform will be created by requiring: Email, Password, Full Name and Date of Birth.
 * **FR-01.2 (Security):** Authentication via JSON Web Tokens (JWT). Passwords must be encrypted using strong algorithms (`bcrypt` with a minimum of 10 rounds).
 
 ---
 
 ## Module 2: Event Creation and Configuration (Organizer)
 
-* **FR-02.1 (Creation and Location):** Events must be created by specifying Country, City, dates, title, description and max of attendees.
+* **FR-02.1 (Creation and Location):** Events must be created by specifying Country, City, dates, title, description, maxIncriptionDate and max of attendees.
 
 * **FR-02.2 (Custom Extra Fields):** The Organizer can enable toggles to require specific data during registration (e.g., Blood Type, ID Number).
 
@@ -68,7 +68,7 @@ The system empowers all users under a Role-Based Access Control (RBAC) scheme, w
 
 * **FR-03.2 (Logistics Filtering by Plan):** When using the "Team Splitter" or reviewing participant lists, the Organizer can filter participants based on their payment state (completed - partial)
 
-* **FR-03.3 (Forms Creation and Management):** With data events and specified by the Organizer, the application is available to create two kind of forms: *Manual*, where the organizer registers a new attendee manually, with the option to make partial payments. Remote, where as a common online form, interested people can join to the event by registering themselves but with the only option of full payment (mandatory voucher).
+* **FR-03.3 (Forms Creation and Management):** With data events and specified by the Organizer, the application is available to create two kind of forms: *Manual*, where the organizer registers a new attendee manually, with the option to make partial payments and cash option. *Remote*, where as a common online form, interested people can join to the event by registering themselves but with the only option of full payment and through and digital payment only(mandatory voucher).
 
 * **FR-03.4 (Join Event Requests):** At the moment to send a Remote form, a Join event request would be created on administrator view, where all request details will be shown (specially to verify voucher on the admins/organization bank account)
 

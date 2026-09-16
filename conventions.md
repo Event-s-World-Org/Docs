@@ -31,14 +31,14 @@ All branches must strictly follow the defined naming format to ensure traceabili
 
 ### Structure:
 ```text
-<branch type>/<story number>_<developer initials>_<descriptor>
+<branch type>/<story number>_<developer initials>_<description>
 ```
 
 ### Components:
 * `<branch type>`: Explained on the next subtitle "Branch Types".
 * `<story number>`: Numeric identifier for the user story, issue, or ticket (e.g., Jira issue ID, GitHub Issue number).
 * `<developer initials>`: Uppercase initials of the developer assigned to the task (e.g., `MS`).
-* `<descriptor>`: A short, descriptive summary of the feature written in `UpperCamelCase` or separated by underscores (`_`).
+* `<description>`: A short, descriptive summary of the feature written in `UpperCamelCase` or separated by underscores (`_`).
 
 ### Branch Types
 

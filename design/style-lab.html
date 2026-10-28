@@ -1,0 +1,772 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laboratorio de estilos Event's World</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,600&family=Instrument+Sans:wght@400;500&family=Unbounded:wght@500&family=Figtree:wght@400;600&display=swap">
+<style>
+/* Layout: sticky control bar on top, then a "stage" that renders real Event's World screens with the chosen tokens. */
+:root {
+  --lab-bg: #F4F4F6;
+  --lab-panel: #FFFFFF;
+  --lab-ink: #1B1B20;
+  --lab-muted: #63636E;
+  --lab-line: #E1E1E7;
+  --lab-strong: #1B1B20;
+  --lab-on-strong: #FFFFFF;
+  --lab-device: #1E1E24;
+  --lab-code: #EEEEF2;
+  --lab-font: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --lab-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --lab-bg: #111114; --lab-panel: #19191D; --lab-ink: #ECECF1; --lab-muted: #A0A0AC; --lab-line: #2C2C33;
+    --lab-strong: #ECECF1; --lab-on-strong: #111114; --lab-device: #3A3A44; --lab-code: #202026; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --lab-bg: #111114; --lab-panel: #19191D; --lab-ink: #ECECF1; --lab-muted: #A0A0AC; --lab-line: #2C2C33;
+  --lab-strong: #ECECF1; --lab-on-strong: #111114; --lab-device: #3A3A44; --lab-code: #202026; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+table { color: inherit; font-family: inherit; font-weight: inherit; line-height: inherit; }
+body { background: var(--lab-bg); color: var(--lab-ink); font-family: var(--lab-font); font-size: 15px; line-height: 1.5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--lab-panel); }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1320px; margin-inline: auto; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+:focus-visible { outline: 2px solid var(--lab-strong); outline-offset: 2px; }
+
+/* ---------- intro ---------- */
+.intro { padding-block: 28px 18px; display: grid; gap: 8px; }
+.intro .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--lab-muted); font-weight: 700; }
+.intro h1 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; letter-spacing: -.02em; }
+.intro p { margin: 0; max-width: 68ch; color: var(--lab-muted); }
+
+/* ---------- controls ---------- */
+.controls { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--lab-panel); border-block: 1px solid var(--lab-line); }
+.controls .wrap { padding-block: 12px; display: grid; gap: 12px; }
+.palettes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }
+.pal { position: relative; display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--lab-line); border-radius: 10px; cursor: pointer; background: var(--lab-panel); }
+.pal input { position: absolute; opacity: 0; pointer-events: none; }
+.pal:has(input:checked) { border-color: var(--lab-strong); box-shadow: inset 0 0 0 1px var(--lab-strong); }
+.pal:has(input:focus-visible) { outline: 2px solid var(--lab-strong); outline-offset: 2px; }
+.pal-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pal-name { font-weight: 800; font-size: 15px; }
+.sw { display: flex; gap: 3px; }
+.sw i { width: 16px; height: 16px; border-radius: 4px; border: 1px solid rgba(127,127,127,.25); }
+.pal-mood { font-size: 12.5px; color: var(--lab-muted); line-height: 1.35; }
+.pal-kind { font-size: 12px; color: var(--lab-muted); font-weight: 600; }
+.seg.locked .seg-opts { opacity: .45; pointer-events: none; }
+.seg-lock { font-size: 12.5px; color: var(--lab-muted); }
+.toolrow { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.seg { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.seg-label { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--lab-muted); }
+.seg-opts { display: inline-flex; border: 1px solid var(--lab-line); border-radius: 8px; overflow: hidden; }
+.seg-opts label { position: relative; padding: 6px 11px; font-size: 13.5px; font-weight: 600; cursor: pointer; border-left: 1px solid var(--lab-line); }
+.seg-opts label:first-child { border-left: 0; }
+.seg-opts input { position: absolute; opacity: 0; pointer-events: none; }
+.seg-opts label:has(input:checked) { background: var(--lab-strong); color: var(--lab-on-strong); }
+.seg-opts label:has(input:focus-visible) { outline: 2px solid var(--lab-strong); outline-offset: -3px; }
+
+/* ---------- stage (everything below uses the candidate tokens --ew-*) ---------- */
+.stage-wrap { padding-block: 22px 40px; display: grid; gap: 28px; }
+.section-head { display: grid; gap: 4px; color: var(--lab-ink); font-family: var(--lab-font); }
+.section-head h2 { font-size: 19px; font-weight: 800; }
+.section-head p { margin: 0; color: var(--lab-muted); font-size: 14px; max-width: 70ch; }
+.note { font-size: 13.5px; padding: 10px 12px; border-radius: 8px; border: 1px dashed var(--lab-line); color: var(--lab-muted); }
+.note strong { color: var(--lab-ink); }
+
+.stage {
+  /* defaults; replaced by JS on load */
+  --ew-bg: #F5F8FB; --ew-surface: #FFFFFF; --ew-surface-2: #EBF1F7; --ew-border: #D5E0EA; --ew-text: #0E1B2A; --ew-muted: #52657A;
+  --ew-primary: #0B63B6; --ew-primary-hover: #09528F; --ew-on-primary: #FFFFFF; --ew-accent: #F0644C;
+  --ew-glass: rgba(255,255,255,.62); --ew-glass-border: rgba(255,255,255,.55); --ew-blur: blur(16px) saturate(150%);
+  --ew-shadow: 0 8px 24px rgba(0,0,0,.08);
+  --ew-pending-bg: #FEF3C7; --ew-pending-fg: #92400E; --ew-approved-bg: #DCFCE7; --ew-approved-fg: #166534;
+  --ew-observed-bg: #EDE9FE; --ew-observed-fg: #5B21B6; --ew-rejected-bg: #FEE2E2; --ew-rejected-fg: #991B1B;
+  --ew-info-bg: #DBEAFE; --ew-info-fg: #1E40AF; --ew-neutral-bg: #EBF1F7; --ew-neutral-fg: #52657A;
+  --ew-font: 'Plus Jakarta Sans', system-ui, sans-serif; --ew-font-head: var(--ew-font);
+  --ew-w-strong: 700; --ew-w-title: 800;
+  --ew-control-border: #D5E0EA; --ew-chart: #0B63B6;
+  --ew-shadow-1: none; --ew-shadow-2: 0 8px 24px rgba(0,0,0,.08); --ew-edge: none;
+  --ew-r-sm: 6px; --ew-r-md: 12px; --ew-r-lg: 18px; --ew-r-pill: 999px;
+  display: grid; gap: 28px;
+}
+.ew { font-family: var(--ew-font); color: var(--ew-text); }
+.ew .muted { color: var(--ew-muted); }
+.ew .sub { font-size: 13px; }
+.glass { background: var(--ew-glass); border: 1px solid var(--ew-glass-border); backdrop-filter: var(--ew-blur); -webkit-backdrop-filter: var(--ew-blur); }
+@media (prefers-reduced-transparency: reduce) { .glass { background: var(--ew-surface); backdrop-filter: none; -webkit-backdrop-filter: none; } }
+
+/* phones */
+.phones { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 22px; justify-items: center; }
+.phone { width: 100%; max-width: 360px; display: grid; gap: 8px; }
+.phone-cap { font-size: 12.5px; color: var(--lab-muted); font-weight: 600; text-align: center; }
+.device { border: 9px solid var(--lab-device); border-radius: 40px; overflow: hidden; height: 700px; background: var(--lab-device); box-shadow: 0 20px 40px rgba(0,0,0,.18); }
+.screen { height: 100%; overflow-y: auto; overflow-x: hidden; background: var(--ew-bg); position: relative; scrollbar-width: thin; }
+
+/* shared candidate components */
+.btn { font: inherit; font-weight: 700; font-size: 15px; border-radius: var(--ew-r-md); padding: 12px 16px; border: 1px solid transparent; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; line-height: 1.2; }
+.btn-primary { background: var(--ew-primary); color: var(--ew-on-primary); }
+.btn-primary:hover { background: var(--ew-primary-hover); }
+.btn-secondary { background: var(--ew-surface); color: var(--ew-text); border-color: var(--ew-border); }
+.btn-ghost { background: transparent; color: var(--ew-primary); }
+.btn-approve { background: var(--ew-approved-bg); color: var(--ew-approved-fg); border-color: color-mix(in srgb, var(--ew-approved-fg) 25%, transparent); }
+.btn-observe { background: var(--ew-observed-bg); color: var(--ew-observed-fg); border-color: color-mix(in srgb, var(--ew-observed-fg) 25%, transparent); }
+.btn-reject { background: var(--ew-rejected-bg); color: var(--ew-rejected-fg); border-color: color-mix(in srgb, var(--ew-rejected-fg) 25%, transparent); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn-block { width: 100%; }
+.badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; padding: 4px 10px; border-radius: var(--ew-r-pill); white-space: nowrap; line-height: 1.3; }
+.badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.b-pending { background: var(--ew-pending-bg); color: var(--ew-pending-fg); }
+.b-approved { background: var(--ew-approved-bg); color: var(--ew-approved-fg); }
+.b-observed { background: var(--ew-observed-bg); color: var(--ew-observed-fg); }
+.b-rejected { background: var(--ew-rejected-bg); color: var(--ew-rejected-fg); }
+.b-info { background: var(--ew-info-bg); color: var(--ew-info-fg); }
+.b-neutral { background: var(--ew-neutral-bg); color: var(--ew-neutral-fg); }
+.field { display: grid; gap: 6px; }
+.field label, .field .lbl { font-size: 13px; font-weight: 700; }
+.input { font: inherit; font-size: 15px; width: 100%; padding: 11px 12px; border-radius: var(--ew-r-sm); border: 1px solid var(--ew-control-border); background: var(--ew-surface); color: var(--ew-text); }
+.input::placeholder { color: var(--ew-muted); }
+.input:focus { outline: none; border-color: var(--ew-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ew-primary) 25%, transparent); }
+.input.is-error { border-color: var(--ew-rejected-fg); }
+.input:disabled { background: var(--ew-surface-2); color: var(--ew-muted); }
+.card { background: var(--ew-surface); border: 1px solid var(--ew-border); border-radius: var(--ew-r-lg); }
+.chip { font: inherit; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: var(--ew-r-pill); border: 1px solid var(--ew-border); background: var(--ew-surface); color: var(--ew-text); }
+.chip.on { background: var(--ew-primary); color: var(--ew-on-primary); border-color: var(--ew-primary); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* PUB-02 detail */
+.topbar { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; font-weight: 700; }
+.topbar.glass { border-width: 0 0 1px; }
+.cover { height: 210px; margin-top: -50px; position: relative; overflow: hidden;
+  background:
+    radial-gradient(60% 70% at 20% 30%, rgba(255, 92, 168, .85), transparent 60%),
+    radial-gradient(50% 60% at 80% 20%, rgba(80, 160, 255, .85), transparent 60%),
+    radial-gradient(70% 80% at 60% 100%, rgba(255, 190, 70, .9), transparent 60%),
+    linear-gradient(160deg, #1b1035, #0b1530);
+}
+.cover::after { content: ""; position: absolute; inset: auto 0 0 0; height: 60px; background: repeating-linear-gradient(90deg, rgba(0,0,0,.55) 0 6px, transparent 6px 14px); -webkit-mask: linear-gradient(transparent, #000); mask: linear-gradient(transparent, #000); }
+.cover .cat { position: absolute; left: 14px; bottom: 14px; z-index: 1; color: #fff; font-size: 12.5px; font-weight: 700; padding: 5px 11px; border-radius: var(--ew-r-pill); }
+.cover .cat.glass { color: var(--ew-text); }
+.detail { padding: 16px 16px 24px; display: grid; gap: 14px; }
+.detail h3 { font-size: 23px; font-weight: 800; letter-spacing: -.01em; line-height: 1.2; }
+.meta { display: grid; gap: 2px; font-size: 13.5px; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tile { padding: 10px; border-radius: var(--ew-r-md); background: var(--ew-surface-2); text-align: center; display: grid; gap: 2px; }
+.tile small { font-size: 11.5px; color: var(--ew-muted); font-weight: 600; }
+.tile b { font-size: 15px; }
+.desc { font-size: 14px; line-height: 1.6; margin: 0; }
+.org { display: flex; gap: 12px; align-items: center; padding: 12px; }
+.avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--ew-primary), var(--ew-accent)); flex: none; display: grid; place-items: center; color: #FFFFFF; font-size: 14px; font-weight: 700; }
+.cta { position: sticky; bottom: 0; z-index: 3; isolation: isolate; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; }
+.cta.glass { border-width: 1px 0 0; }
+.cta .price { display: grid; line-height: 1.2; }
+.cta .price b { font-size: 18px; }
+.cta .price small { font-size: 12px; color: var(--ew-muted); }
+
+/* shared text helpers */
+.code { font-family: var(--lab-mono); font-size: 14px; font-weight: 500; letter-spacing: .04em; }
+.flex { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* desktop panel */
+.desk-scroll { overflow-x: auto; border-radius: 14px; border: 1px solid var(--lab-line); }
+.desk { min-width: 1060px; background: var(--ew-bg); display: grid; grid-template-columns: 210px 1fr; min-height: 560px; }
+.side { background: var(--ew-surface); border-right: 1px solid var(--ew-border); padding: 18px 12px; display: grid; align-content: start; gap: 4px; }
+.side .brand { font-weight: 800; font-size: 17px; padding: 0 8px 12px; }
+.side a { display: block; padding: 9px 10px; border-radius: var(--ew-r-sm); font-size: 14px; font-weight: 600; color: var(--ew-text); text-decoration: none; }
+.side a.on { background: color-mix(in srgb, var(--ew-primary) 14%, transparent); color: var(--ew-primary); }
+.side a.soon { color: var(--ew-muted); font-size: 13px; }
+.main { padding: 18px 22px; display: grid; gap: 16px; align-content: start; }
+.mainhead { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.mainhead h3 { font-size: 20px; font-weight: 800; }
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.kpi { padding: 14px; display: grid; gap: 4px; }
+.kpi small { color: var(--ew-muted); font-size: 12.5px; font-weight: 600; }
+.kpi b { font-size: 22px; letter-spacing: -.01em; }
+.bar { height: 6px; border-radius: 99px; background: var(--ew-surface-2); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--ew-primary); border-radius: 99px; }
+.review { display: grid; grid-template-columns: 1.7fr 1fr; gap: 14px; align-items: start; }
+.tbl td:nth-child(n+2) { white-space: nowrap; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tbl th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--ew-muted); padding: 10px 12px; border-bottom: 1px solid var(--ew-border); }
+.tbl td { padding: 10px 12px; border-bottom: 1px solid var(--ew-border); }
+.tbl tr.sel td { background: color-mix(in srgb, var(--ew-primary) 9%, transparent); }
+.tbl td small { display: block; color: var(--ew-muted); font-size: 12px; }
+.voucher { height: 190px; max-width: 100%; border-radius: var(--ew-r-md); background: repeating-linear-gradient(0deg, var(--ew-surface-2) 0 18px, var(--ew-surface) 18px 36px); border: 1px solid var(--ew-border); display: grid; place-items: center; font-size: 13px; color: var(--ew-muted); }
+.chart svg { width: 100%; height: auto; display: block; }
+
+
+/* ---------- full proposals: Taquilla and Altiplano (skills: anti-slop, colour-palette, typography, surfaces) ---------- */
+.stage[data-system="product"] b, .stage[data-system="product"] .tile b, .stage[data-system="product"] .cta .price b { font-weight: var(--ew-w-strong); }
+.stage[data-system="product"] .detail h3,
+.stage[data-system="product"] .mainhead h3,
+.stage[data-system="product"] .side .brand { font-family: var(--ew-font-head); font-weight: var(--ew-w-title); letter-spacing: -.01em; }
+.stage[data-system="product"] .detail h3 { font-size: 1.73rem; line-height: 1.15; }
+.stage[data-system="product"] .mainhead h3 { font-size: 1.44rem; line-height: 1.2; }
+.stage[data-system="product"] .side .brand { font-size: 1.125rem; }
+.stage[data-system="product"] .btn { font-size: 16px; font-weight: var(--ew-w-strong); }
+.stage[data-system="product"] .badge { font-size: 14px; font-weight: var(--ew-w-strong); border-radius: var(--ew-r-sm); padding: 3px 8px; }
+.stage[data-system="product"] .field label { font-size: 14px; font-weight: var(--ew-w-strong); }
+.stage[data-system="product"] .input { font-size: 16px; }
+.stage[data-system="product"] .chip { font-size: 14px; font-weight: var(--ew-w-strong); }
+.stage[data-system="product"] .meta, .stage[data-system="product"] .sub { font-size: 14px; }
+.stage[data-system="product"] .tile small { font-size: 12px; font-weight: 400; }
+.stage[data-system="product"] .tile b { font-size: 16px; }
+.stage[data-system="product"] .desc { font-size: 16px; line-height: 1.55; }
+.stage[data-system="product"] .side a { font-size: 14px; font-weight: var(--ew-w-strong); }
+.stage[data-system="product"] .side a.soon { font-size: 14px; font-weight: 400; }
+.stage[data-system="product"] .side a.on { background: var(--ew-surface-2); color: var(--ew-text); box-shadow: inset 3px 0 0 var(--ew-primary); }
+.stage[data-system="product"] .kpi small { font-size: 14px; font-weight: 400; }
+.stage[data-system="product"] .kpi b { font-family: var(--ew-font-head); font-weight: var(--ew-w-title); font-size: 1.44rem; line-height: 1.2; }
+.stage[data-system="product"] .tbl th { text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: var(--ew-w-strong); }
+.stage[data-system="product"] .tbl tr.sel td { background: var(--ew-surface-2); }
+.stage[data-system="product"] .voucher { font-size: 14px; }
+.stage[data-system="product"] .code { font-family: var(--ew-font-head); font-weight: var(--ew-w-title); letter-spacing: .04em; }
+.stage[data-system="product"] .card { box-shadow: var(--ew-shadow-1), var(--ew-edge); }
+.stage[data-system="product"] .topbar { background: var(--ew-surface); border-bottom: 1px solid var(--ew-border); font-weight: var(--ew-w-strong); }
+.stage[data-system="product"] .cover { margin-top: 0; }
+.stage[data-system="product"] .cover .cat { background: var(--ew-surface); color: var(--ew-text); border: 0; border-radius: var(--ew-r-sm); font-size: 12px; font-weight: var(--ew-w-strong); padding: 4px 8px; }
+.stage[data-system="product"] .deadline { background: none; padding: 0; color: var(--ew-text); font-size: 14px; font-weight: var(--ew-w-strong); }
+.stage[data-system="product"] .deadline::before { display: none; }
+.stage[data-system="product"] .avatar { background: var(--ew-surface-2); color: var(--ew-text); border: 1px solid var(--ew-border); font-weight: var(--ew-w-strong); }
+.stage[data-system="product"] .cta { background: var(--ew-surface); border-top: 1px solid var(--ew-border); box-shadow: var(--ew-shadow-2); }
+.stage[data-system="product"] .cta .price b { font-family: var(--ew-font-head); font-weight: var(--ew-w-title); }
+
+.stage[data-system="product"] .screen, .stage[data-system="product"] .desk { font-size: 16px; line-height: 1.55; }
+.stage[data-system="product"] .tbl tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--ew-primary); }
+.stage :focus-visible { outline-color: var(--ew-text); }
+@media (pointer: coarse) { .stage[data-system="product"] .chip, .stage[data-system="product"] .side a { min-height: 44px; } }
+
+/* Taquilla: Minor Third scale (1.2). The one bold element is the ticket-stub perforation on the registration bar */
+.stage[data-proposal="taquilla"] .detail h3 { font-size: 1.728rem; }
+.stage[data-proposal="taquilla"] .side .brand { font-size: 1.2rem; }
+.stage[data-proposal="taquilla"] .cta { border-top: 0; padding-top: 18px;
+  -webkit-mask: radial-gradient(circle at 7px 0, transparent 5px, #000 5.5px) 0 0 / 14px 100% repeat-x;
+  mask: radial-gradient(circle at 7px 0, transparent 5px, #000 5.5px) 0 0 / 14px 100% repeat-x; }
+.stage[data-proposal="taquilla"] .cta::before { content: ""; position: absolute; left: 14px; right: 14px; top: 9px; border-top: 1px dashed var(--ew-control-border); }
+.stage[data-proposal="taquilla"] .cta .price b { font-size: 1.2rem; }
+
+/* Altiplano: Major Second scale (1.125), because the typeface is wide. The one bold element is the wide poster typeface on titles and prices */
+.stage[data-proposal="altiplano"] .detail h3 { font-size: 1.424rem; line-height: 1.2; letter-spacing: 0; }
+.stage[data-proposal="altiplano"] .mainhead h3 { font-size: 1.266rem; letter-spacing: 0; }
+.stage[data-proposal="altiplano"] .kpi b { font-size: 1.266rem; letter-spacing: 0; }
+.stage[data-proposal="altiplano"] .side .brand { letter-spacing: 0; }
+.stage[data-proposal="altiplano"] .cta .price b { font-size: 1.125rem; letter-spacing: 0; }
+.stage[data-proposal="altiplano"] .code { font-family: var(--ew-font); font-weight: var(--ew-w-strong); letter-spacing: .06em; }
+
+/* ---------- Salar Cristal: exaggerated glassmorphism on the Salar palette (explicit request; outside the anti-slop default) ---------- */
+.stage[data-glass="intense"] .screen, .stage[data-glass="intense"] .desk { background: var(--ew-backdrop); }
+.stage[data-glass="intense"] .card, .stage[data-glass="intense"] .tile, .stage[data-glass="intense"] .side,
+.stage[data-glass="intense"] .topbar, .stage[data-glass="intense"] .cta, .stage[data-glass="intense"] .detail,
+.stage[data-glass="intense"] .input, .stage[data-glass="intense"] .chip:not(.on), .stage[data-glass="intense"] .cover .cat,
+.stage[data-glass="intense"] .btn-secondary, .stage[data-glass="intense"] .voucher {
+  background: var(--ew-glass); border: 1px solid var(--ew-glass-border);
+  backdrop-filter: var(--ew-blur); -webkit-backdrop-filter: var(--ew-blur);
+  box-shadow: inset 0 1px 0 var(--ew-glass-highlight), var(--ew-glass-shadow);
+}
+.stage[data-glass="intense"] .detail { margin: -28px 10px 14px; border-radius: var(--ew-r-lg); position: relative; z-index: 1; }
+.stage[data-glass="intense"] .cover { height: 230px; }
+.stage[data-glass="intense"] .cover .cat { bottom: 42px; }
+.stage[data-glass="intense"] .input { border-color: var(--ew-control-border); }
+.stage[data-glass="intense"] .cta { margin: 0 10px 10px; border-radius: var(--ew-r-lg); bottom: 10px; }
+.stage[data-glass="intense"] .topbar { border-width: 0 0 1px; }
+.stage[data-glass="intense"] .tile { border-radius: var(--ew-r-md); }
+.stage[data-glass="intense"] .side { border-width: 0 1px 0 0; border-radius: 0; }
+.stage[data-glass="intense"] .side a.on { background: var(--ew-glass); color: var(--ew-text); box-shadow: inset 3px 0 0 var(--ew-primary), inset 0 1px 0 var(--ew-glass-highlight); }
+.stage[data-glass="intense"] .tbl th, .stage[data-glass="intense"] .tbl td { border-bottom-color: var(--ew-glass-border); }
+.stage[data-glass="intense"] .tbl tr.sel td { background: color-mix(in srgb, var(--ew-primary) 14%, transparent); }
+.stage[data-glass="intense"] .tbl tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--ew-primary); }
+.stage[data-glass="intense"] .btn-primary { box-shadow: 0 6px 18px color-mix(in srgb, var(--ew-primary) 35%, transparent), inset 0 1px 0 rgba(255, 255, 255, .25); }
+.stage[data-glass="intense"] .voucher { background-image: repeating-linear-gradient(0deg, var(--ew-glass-border) 0 1px, transparent 1px 18px); }
+.stage[data-glass="intense"] .bar { background: var(--ew-glass); }
+@media (prefers-reduced-transparency: reduce) {
+  .stage[data-glass="intense"] .card, .stage[data-glass="intense"] .tile, .stage[data-glass="intense"] .side,
+  .stage[data-glass="intense"] .topbar, .stage[data-glass="intense"] .cta, .stage[data-glass="intense"] .detail,
+  .stage[data-glass="intense"] .input, .stage[data-glass="intense"] .chip:not(.on), .stage[data-glass="intense"] .cover .cat,
+  .stage[data-glass="intense"] .btn-secondary, .stage[data-glass="intense"] .voucher {
+    background: var(--ew-surface); backdrop-filter: none; -webkit-backdrop-filter: none; border-color: var(--ew-border);
+  }
+}
+
+/* ---------- Illimani: frosted glass over a mountain landscape (inspired by the user's reference image) ---------- */
+.stage[data-glass-style="frost"] .screen, .stage[data-glass-style="frost"] .desk { background: var(--ew-backdrop); }
+.stage[data-glass-style="frost"] .mainhead { background: var(--ew-glass); border: 1.5px solid var(--ew-glass-border); backdrop-filter: var(--ew-blur); -webkit-backdrop-filter: var(--ew-blur); box-shadow: inset 0 1px 0 var(--ew-glass-highlight), var(--ew-glass-shadow); padding: 10px 16px; border-radius: var(--ew-r-lg); }
+.stage[data-glass-style="frost"] .card, .stage[data-glass-style="frost"] .tile, .stage[data-glass-style="frost"] .side,
+.stage[data-glass-style="frost"] .topbar, .stage[data-glass-style="frost"] .cta, .stage[data-glass-style="frost"] .detail,
+.stage[data-glass-style="frost"] .chip:not(.on), .stage[data-glass-style="frost"] .cover .cat, .stage[data-glass-style="frost"] .voucher { border-width: 1.5px; }
+.stage[data-glass-style="frost"] .input { background: var(--ew-input-bg); border: 1.5px solid var(--ew-glass-border); }
+.stage[data-glass-style="frost"] .input:focus { border-color: var(--ew-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ew-primary) 30%, transparent); }
+.stage[data-glass-style="frost"] .btn-primary { background: var(--ew-primary-gradient); border: 0; border-radius: var(--ew-r-pill); box-shadow: 0 10px 24px var(--ew-primary-glow); }
+.stage[data-glass-style="frost"] .btn-primary:hover { filter: brightness(1.06); }
+.stage[data-glass-style="frost"] .chip.on { background: var(--ew-active-bg); color: var(--ew-active-fg); border: 1.5px solid var(--ew-glass-border); box-shadow: 0 4px 14px rgba(15, 23, 42, .10); }
+.stage[data-glass-style="frost"] .side a.on { background: var(--ew-active-bg); color: var(--ew-active-fg); box-shadow: 0 4px 14px rgba(15, 23, 42, .10); }
+.stage[data-glass-style="frost"] .side { margin: 12px 0 12px 12px; border-radius: var(--ew-r-lg); border-width: 1.5px; }
+.stage[data-glass-style="frost"] .badge { border-radius: var(--ew-r-pill); }
+.stage[data-glass-style="frost"] .cover { margin: -50px 0 0; }
+.stage[data-glass-style="frost"] .bar i { background: var(--ew-primary-gradient); }
+
+/* contrast + tokens */
+.ctab-wrap { overflow-x: auto; }
+.ctab { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--lab-panel); border-radius: 12px; overflow: hidden; }
+.ctab th, .ctab td { padding: 9px 12px; border-bottom: 1px solid var(--lab-line); text-align: left; }
+.ctab th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--lab-muted); }
+.sample { display: inline-block; padding: 3px 10px; border-radius: 6px; font-weight: 700; }
+.pass { font-weight: 800; }
+.fail { font-weight: 800; text-decoration: underline wavy; }
+.tokens { display: grid; gap: 8px; }
+.tokens pre { margin: 0; max-height: 360px; overflow: auto; background: var(--lab-code); border: 1px solid var(--lab-line); border-radius: 12px; padding: 14px; font-family: var(--lab-mono); font-size: 12.5px; line-height: 1.55; }
+.copy { justify-self: start; font: inherit; font-weight: 700; font-size: 14px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--lab-strong); background: var(--lab-strong); color: var(--lab-on-strong); cursor: pointer; }
+@media (prefers-reduced-motion: no-preference) { .btn, .chip { transition: background-color .15s, border-color .15s; } }
+@media (max-width: 520px) { .device { height: 640px; } .controls .wrap { gap: 10px; } .pal-mood { display: none; } }
+@media (max-height: 940px) { .controls { position: static; } }
+</style>
+
+<div class="wrap intro">
+  <span class="eyebrow">Event's World · fase de diseño</span>
+  <h1>Laboratorio de estilos</h1>
+  <p><strong>Decisión final (28 oct 2026): Salar Cristal con tipografía Outfit y esquinas suaves</strong>, en modo claro y oscuro, para todas las vistas (ver <code>design-system.md</code>). Las demás opciones quedan como registro del análisis. Hay 4 paletas iniciales, las variantes Salar Cristal (vidrio intenso) e Illimani (vidrio esmerilado sobre paisaje) y 2 propuestas completas (Taquilla y Altiplano), que además definen su propia tipografía, superficies y esquinas. En las paletas iniciales puedes ajustar el vidrio, la tipografía y las esquinas. Todo se aplica a dos pantallas reales de los wireframes: el detalle del evento en el celular (PUB-02) y la revisión de pagos del organizador (ORG-08). Abajo verás el contraste de accesibilidad y los tokens listos para copiar a <code>styles.css</code>.</p>
+</div>
+
+<div class="controls">
+  <div class="wrap">
+    <div class="palettes" role="radiogroup" aria-label="Paleta" id="palettes"></div>
+    <div class="toolrow">
+      <div class="seg"><span class="seg-label" id="l-mode">Modo</span>
+        <div class="seg-opts" role="radiogroup" aria-labelledby="l-mode">
+          <label><input type="radio" name="mode" id="mode-light" value="light" checked>Claro</label>
+          <label><input type="radio" name="mode" id="mode-dark" value="dark">Oscuro</label>
+        </div>
+      </div>
+      <div class="seg" id="seg-glass"><span class="seg-label" id="l-glass">Vidrio</span>
+        <div class="seg-opts" role="radiogroup" aria-labelledby="l-glass">
+          <label><input type="radio" name="glass" id="glass-on" value="on" checked>Moderado</label>
+          <label><input type="radio" name="glass" id="glass-off" value="off">Sin vidrio</label>
+        </div>
+      </div>
+      <div class="seg" id="seg-font"><span class="seg-label" id="l-font">Tipografía</span>
+        <div class="seg-opts" role="radiogroup" aria-labelledby="l-font" id="fonts"></div>
+      </div>
+      <div class="seg" id="seg-radius"><span class="seg-label" id="l-radius">Esquinas</span>
+        <div class="seg-opts" role="radiogroup" aria-labelledby="l-radius" id="radii"></div>
+      </div>
+      <span class="seg-lock" id="seg-lock" hidden>La propuesta elegida define el vidrio, la tipografía y las esquinas.</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap stage-wrap">
+  <div class="note" id="palnote"></div>
+
+  <div class="stage ew" id="stage">
+
+    <section class="section-head">
+      <h2>Participante en el celular (PUB-02)</h2>
+      <p>El color de marca, la portada y la barra fija de inscripción. Desplázate dentro del teléfono para ver cómo se comporta la barra sobre el contenido.</p>
+    </section>
+
+    <div class="phones">
+      <!-- PUB-02 -->
+      <div class="phone">
+        <div class="device"><div class="screen">
+          <div class="topbar glass"><span>‹ Evento</span><span aria-hidden="true">☾</span></div>
+          <div class="cover" role="img" aria-label="Portada del evento"><span class="cat glass">Festival y música</span></div>
+          <div class="detail">
+            <h3>Electric Neon Fest 2026</h3>
+            <div class="meta muted"><span>Sábado 15 de noviembre de 2026, de 18:00 a 02:00</span><span>Arena Central, La Paz, Bolivia</span></div>
+            <div class="tiles num">
+              <div class="tile"><small>Precio</small><b>120 BOB</b></div>
+              <div class="tile"><small>Edad mínima</small><b>+18</b></div>
+              <div class="tile"><small>Cupos libres</small><b>12</b></div>
+            </div>
+            <span class="badge b-pending deadline" style="justify-self:start">Inscripciones hasta el 10 de noviembre</span>
+            <p class="desc">Ocho horas de música electrónica con artistas de La Paz, Santa Cruz y Lima. Zona de comida, puntos de hidratación gratuitos y transporte nocturno coordinado al cierre.</p>
+            <div class="card org"><span class="avatar" aria-hidden="true">AP</span><div><b>Andes Producciones</b><div class="muted sub">Contacto: +591 700 00000</div></div></div>
+            <p class="desc muted">Las entradas no son reembolsables salvo cancelación del evento. Presenta tu código de inscripción en la entrada.</p>
+          </div>
+          <div class="cta glass">
+            <div class="price num"><b>120 BOB</b><small>Quedan 12 cupos</small></div>
+            <button class="btn btn-primary" type="button">Inscribirme</button>
+          </div>
+        </div></div>
+        <div class="phone-cap">PUB-02 · Detalle del evento</div>
+      </div>
+
+    </div>
+
+    <section class="section-head">
+      <h2>Organizador en escritorio (ORG-08)</h2>
+      <p>Los colores de estado, las tres acciones de revisión, los indicadores y la tabla. En celulares esta vista se desplaza horizontalmente.</p>
+    </section>
+
+    <div class="desk-scroll">
+      <div class="desk">
+        <nav class="side" aria-label="Menú del organizador">
+          <div class="brand">Event's World</div>
+          <a href="#stage">Mis eventos</a>
+          <a href="#stage">Dashboard</a>
+          <a href="#stage" class="on">Revisión de pagos</a>
+          <a href="#stage">Participantes</a>
+          <a href="#stage" class="soon">Equipos (próximamente)</a>
+          <a href="#stage">Configuración</a>
+        </nav>
+        <div class="main">
+          <div class="mainhead"><h3>Revisión de pagos</h3><span class="badge b-approved">Publicado</span></div>
+          <div class="kpis num">
+            <div class="card kpi"><small>Inscritos</small><b>320 / 500</b><div class="bar"><i style="width:64%"></i></div></div>
+            <div class="card kpi"><small>Por revisar</small><b>4</b><span class="muted sub">1 en observación</span></div>
+            <div class="card kpi"><small>Dinero real</small><b>36.000 BOB</b><span class="muted sub">Pagos aprobados</span></div>
+            <div class="card kpi chart"><small>Inscripciones por día</small><svg id="chart" viewBox="0 0 220 64" role="img" aria-label="Inscripciones por día, últimas dos semanas"></svg></div>
+          </div>
+          <div class="flex"><button class="chip on" type="button">Pendientes 4</button><button class="chip" type="button">En observación 1</button><button class="chip" type="button">Aprobados 313</button><button class="chip" type="button">Rechazados 2</button></div>
+          <div class="review">
+            <div class="card" style="overflow:hidden">
+              <table class="tbl num">
+                <thead><tr><th>Participante</th><th>Monto</th><th>Fecha</th><th>Estado</th></tr></thead>
+                <tbody>
+                  <tr class="sel"><td><b>Carlos Mendoza</b><small><span class="code">EW-9K2LM</span>, primer comprobante</small></td><td>120 BOB</td><td>Hoy 14:32</td><td><span class="badge b-pending">Pendiente</span></td></tr>
+                  <tr><td><b>Valentina Rojas</b><small><span class="code">EW-7F3K2</span>, reenvío</small></td><td>120 BOB</td><td>Hoy 13:15</td><td><span class="badge b-pending">Pendiente</span></td></tr>
+                  <tr><td><b>Mateo Salazar</b><small><span class="code">EW-2PL9X</span>, primer comprobante</small></td><td>120 BOB</td><td>Ayer 19:40</td><td><span class="badge b-observed">En observación</span></td></tr>
+                  <tr><td><b>Lucía Pérez</b><small><span class="code">EW-8TT2A</span>, primer comprobante</small></td><td>120 BOB</td><td>Ayer 10:05</td><td><span class="badge b-rejected">Rechazado</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card" style="padding:14px;display:grid;gap:10px;align-content:start">
+              <div style="display:grid;gap:2px"><b>Carlos Mendoza</b><span class="muted sub">Código <span class="code">EW-9K2LM</span></span></div>
+              <div class="voucher">Comprobante (zoom)</div>
+              <div class="field"><label for="f-m">Motivo (para observar o rechazar)</label><input class="input" id="f-m" placeholder="Ej. el monto no coincide con la captura"></div>
+              <div class="flex"><button class="btn btn-approve" type="button">Aprobar</button><button class="btn btn-observe" type="button">Observar</button><button class="btn btn-reject" type="button">Rechazar</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <section class="section-head">
+    <h2>Contraste (WCAG 2.1)</h2>
+    <p>Texto normal necesita 4,5:1 (AA); texto grande y bordes de controles, 3:1. Se recalcula con cada cambio.</p>
+  </section>
+  <div class="ctab-wrap"><table class="ctab num" id="ctab"><thead><tr><th>Par</th><th>Muestra</th><th>Contraste</th><th>AA texto</th></tr></thead><tbody></tbody></table></div>
+
+  <section class="section-head">
+    <h2>Tokens de la combinación elegida</h2>
+    <p>Este bloque se pega tal cual en <code>styles.css</code> del frontend (ADR-0007): claro en <code>:root</code> y oscuro en <code>.dark</code>.</p>
+  </section>
+  <div class="tokens"><button class="copy" id="copy" type="button">Copiar tokens</button><pre id="code" tabindex="0"></pre></div>
+</div>
+
+<script>
+const PALETTES = {
+  salar: {
+    name: 'Salar', mood: 'Salar de Uyuni: azul de cielo y coral del atardecer. Limpio y confiable.',
+    light: { bg:'#F5F8FB', surface:'#FFFFFF', surface2:'#EBF1F7', border:'#D3DEE9', text:'#0E1B2A', muted:'#4D6176', primary:'#0B63B6', primaryHover:'#09528F', onPrimary:'#FFFFFF', accent:'#E5533B' },
+    dark:  { bg:'#0A121C', surface:'#111C29', surface2:'#182638', border:'#28394F', text:'#EAF2FA', muted:'#9AB0C6', primary:'#5AB0FF', primaryHover:'#84C4FF', onPrimary:'#04192E', accent:'#FF8A73' },
+    note: 'Paleta segura: el azul transmite confianza en pagos y no se confunde con ningún estado.'
+  },
+  cristal: {
+    name: 'Salar Cristal', kind: '✓ Decisión final · con Outfit y esquinas suaves', mood: 'La paleta Salar con glassmorphism marcado: paneles translúcidos sobre el cielo y el reflejo del salar.',
+    light: { bg:'#E6F0FB', surface:'#FFFFFF', surface2:'#EBF1F7', border:'#D3DEE9', ctrl:'#5A6B80', text:'#0E1B2A', muted:'#3E5367', primary:'#0B63B6', primaryHover:'#09528F', onPrimary:'#FFFFFF', accent:'#E5533B' },
+    dark:  { bg:'#0A121C', surface:'#111C29', surface2:'#182638', border:'#28394F', ctrl:'#7F95B0', text:'#EAF2FA', muted:'#9AB0C6', primary:'#5AB0FF', primaryHover:'#84C4FF', onPrimary:'#04192E', accent:'#FF8A73' },
+    glassIntense: {
+      light: { alpha: .5, base: '#E6F0FB', orb: '#0B63B6', orbAlpha: .45, border: 'rgba(255, 255, 255, .72)', highlight: 'rgba(255, 255, 255, .85)',
+               shadow: '0 10px 30px rgba(14, 27, 42, .14)', blur: 'blur(22px) saturate(180%)',
+               backdrop: 'radial-gradient(42% 30% at 10% 6%, rgba(11, 99, 182, .45), transparent 70%), radial-gradient(40% 30% at 94% 22%, rgba(229, 83, 59, .42), transparent 72%), radial-gradient(50% 34% at 26% 64%, rgba(90, 176, 255, .55), transparent 72%), radial-gradient(40% 28% at 86% 92%, rgba(229, 83, 59, .30), transparent 70%), linear-gradient(180deg, #E6F0FB, #F6EEEC)' },
+      dark:  { alpha: .45, base: '#0A121C', orb: '#5AB0FF', orbAlpha: .45, border: 'rgba(255, 255, 255, .16)', highlight: 'rgba(255, 255, 255, .14)',
+               shadow: '0 10px 30px rgba(0, 0, 0, .45)', blur: 'blur(22px) saturate(160%)',
+               backdrop: 'radial-gradient(42% 30% at 10% 6%, rgba(90, 176, 255, .45), transparent 70%), radial-gradient(40% 30% at 94% 22%, rgba(255, 138, 115, .30), transparent 72%), radial-gradient(50% 34% at 26% 64%, rgba(11, 99, 182, .55), transparent 72%), radial-gradient(40% 28% at 86% 92%, rgba(255, 138, 115, .22), transparent 70%), linear-gradient(180deg, #08172A, #0A121C)' }
+    },
+    note: 'Variante pedida explícitamente: glassmorphism intenso sobre la paleta Salar. Las skills anti-slop lo desaconsejan para la UI del producto; aquí el contraste se controla con el peor caso (abajo) y el vidrio se vuelve sólido si el sistema pide reducir la transparencia.'
+  },
+  illimani: {
+    name: 'Illimani', kind: 'Vidrio esmerilado', mood: 'Inspirada en la imagen de referencia: vidrio lechoso sobre montaña nevada y lago, con índigo eléctrico.',
+    light: { bg:'#BFE0F7', surface:'#FFFFFF', surface2:'#EEF2F8', border:'#D7DEEA', ctrl:'#FFFFFF', text:'#111827', muted:'#2F3A4A', primary:'#3B36E8', primaryHover:'#2F2BC7', onPrimary:'#FFFFFF', accent:'#4757F2' },
+    dark:  { bg:'#0B1530', surface:'#0F172A', surface2:'#1B2440', border:'#2A3556', ctrl:'#FFFFFF', text:'#F1F5FF', muted:'#C9D3E6', primary:'#8C9BFF', primaryHover:'#A5B4FF', onPrimary:'#0B0F2E', accent:'#A5B4FF' },
+    radii: { name:'28 px', sm:12, md:16, lg:28, pill:999 },
+    style: 'frost',
+    glassIntense: {
+      light: { alpha: .45, worst: '#4A7766', noBareText: true, border: 'rgba(255, 255, 255, .6)', highlight: 'rgba(255, 255, 255, .7)',
+               shadow: '0 20px 50px rgba(20, 40, 80, .18)', blur: 'blur(28px) saturate(140%)', inputBg: 'rgba(255, 255, 255, .5)',
+               gradient: 'linear-gradient(90deg, #3B36E8, #4757F2)', glow: 'rgba(59, 54, 232, .35)', activeBg: 'rgba(255, 255, 255, .88)', activeFg: '#3B36E8' },
+      dark:  { alpha: .55, worst: '#8496BC', noBareText: true, border: 'rgba(255, 255, 255, .18)', highlight: 'rgba(255, 255, 255, .12)',
+               shadow: '0 20px 50px rgba(0, 0, 0, .45)', blur: 'blur(28px) saturate(130%)', inputBg: 'rgba(255, 255, 255, .08)',
+               gradient: 'linear-gradient(90deg, #8C9BFF, #A5B4FF)', glow: 'rgba(140, 155, 255, .30)', activeBg: 'rgba(255, 255, 255, .16)', activeFg: '#C7D0FF' }
+    },
+    note: 'Inspirada en la imagen de referencia: vidrio lechoso muy desenfocado, bordes blancos suaves, esquinas grandes y un botón en degradado índigo. El paisaje es el nevado Illimani sobre un lago (de noche, con luna). Igual que en la imagen, los campos no tienen borde oscuro: por eso no llegan a 3:1 (fila "Borde de campo").'
+  },
+  aguayo: {
+    name: 'Aguayo', mood: 'Tejido andino: fucsia intenso y ámbar. La más festiva y con identidad local.',
+    light: { bg:'#FBF7FA', surface:'#FFFFFF', surface2:'#F4ECF2', border:'#E6D6E0', text:'#24121F', muted:'#6A5364', primary:'#B0127E', primaryHover:'#940E69', onPrimary:'#FFFFFF', accent:'#C26A00' },
+    dark:  { bg:'#140B12', surface:'#1E121B', surface2:'#2A1A26', border:'#3D2937', text:'#F8EEF5', muted:'#BBA4B4', primary:'#F062B8', primaryHover:'#F48CC9', onPrimary:'#2A0A1F', accent:'#F5A524' },
+    note: 'Fucsia distintivo para la marca. El ámbar del acento está cerca del amarillo de "Pendiente": úsalo poco.'
+  },
+  yungas: {
+    name: 'Yungas', mood: 'Bosque nublado: verde azulado y naranja. Fresco; ideal para carreras, yoga y campamentos.',
+    light: { bg:'#F4F8F6', surface:'#FFFFFF', surface2:'#E7F1EC', border:'#D0E1D8', text:'#0F1F1A', muted:'#4A6158', primary:'#0D6E69', primaryHover:'#0A5653', onPrimary:'#FFFFFF', accent:'#C2510F' },
+    dark:  { bg:'#08130F', surface:'#0F1D18', surface2:'#162A23', border:'#264339', text:'#E8F5F0', muted:'#9DBBB0', primary:'#3CC7B9', primaryHover:'#6BD9CD', onPrimary:'#052420', accent:'#FF8A47' },
+    note: 'Verde azulado propio. Revisa que no se confunda con el verde de "Aprobado" en botones junto a badges.'
+  },
+  neon: {
+    name: 'Neón', mood: 'Noche de festival: violeta eléctrico y cian. Luce más en modo oscuro.',
+    light: { bg:'#F7F6FD', surface:'#FFFFFF', surface2:'#EEECFA', border:'#DAD6F2', text:'#16132B', muted:'#5A5679', primary:'#6D28D9', primaryHover:'#5B21B6', onPrimary:'#FFFFFF', accent:'#0E7490' },
+    dark:  { bg:'#07061A', surface:'#110F28', surface2:'#1A1738', border:'#2E2A55', text:'#F1EFFF', muted:'#A9A4D1', primary:'#A78BFA', primaryHover:'#C4B5FD', onPrimary:'#1B0F3D', accent:'#22D3EE' },
+    note: 'Atención: el violeta primario se confunde con el estado "En observación" (también violeta). Si se elige, ese estado debería cambiar de color.'
+  },
+  taquilla: {
+    name: 'Taquilla', kind: 'Propuesta completa', mood: 'Boletería: tinta y papel. El color se reserva para los estados de pago y las portadas de cada evento.',
+    light: { bg:'#F3F4F6', surface:'#FFFFFF', surface2:'#ECEEF1', border:'#DADDE3', ctrl:'#8B909B', text:'#16181D', muted:'#5B606B', primary:'#16181D', primaryHover:'#2E323A', onPrimary:'#FFFFFF', accent:'#16181D', chart:'#8B909B' },
+    dark:  { bg:'#121418', surface:'#1B1E24', surface2:'#242830', border:'#30353F', ctrl:'#6E7584', text:'#ECEEF2', muted:'#A2A8B4', primary:'#ECEEF2', primaryHover:'#FFFFFF', onPrimary:'#121418', accent:'#ECEEF2', chart:'#6E7584' },
+    system: {
+      head: { name:'Bricolage Grotesque', stack:"'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif" },
+      body: { name:'Instrument Sans', stack:"'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif" },
+      weights: { body:400, strong:500, title:600 },
+      radii: { name:'8 px', sm:6, md:8, lg:10, pill:999 },
+      shadow: { light: { l1:'0 1px 2px rgba(22, 24, 29, .04)', l2:'0 -4px 12px rgba(22, 24, 29, .06)', edge:'0 0 0 0 transparent' },
+                dark:  { l1:'0 0 0 0 transparent', l2:'0 -4px 12px rgba(0, 0, 0, .30)', edge:'inset 0 1px 0 rgba(255, 255, 255, .05)' } }
+    },
+    note: 'Tinta sobre papel y un solo elemento memorable: el borde perforado de talón en la barra de inscripción. Como la marca no usa color, cada portada de evento y cada estado de pago se leen al instante.'
+  },
+  altiplano: {
+    name: 'Altiplano', kind: 'Propuesta completa', mood: 'Cielo de altura y ocaso: un único naranja sobre tinta de noche, con títulos anchos de afiche.',
+    light: { bg:'#F4F5FA', surface:'#FFFFFF', surface2:'#ECEEF6', border:'#D9DCE8', ctrl:'#8A8FAB', text:'#1A1D33', muted:'#585D78', primary:'#C2410C', primaryHover:'#9A3412', onPrimary:'#FFFFFF', accent:'#C2410C', chart:'#8A8FAB' },
+    dark:  { bg:'#11142A', surface:'#191D38', surface2:'#232848', border:'#343A62', ctrl:'#6A709C', text:'#EEF0FA', muted:'#A6ABCC', primary:'#FB8B4E', primaryHover:'#FDA574', onPrimary:'#2A1004', accent:'#FB8B4E', chart:'#6A709C' },
+    status: { light: { pending:['#FEF6C3','#6B5300'] }, dark: { pending:['#3A3206','#F2D55C'] } },
+    system: {
+      head: { name:'Unbounded', stack:"'Unbounded', 'Figtree', system-ui, sans-serif" },
+      body: { name:'Figtree', stack:"'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif" },
+      weights: { body:400, strong:600, title:500 },
+      radii: { name:'12 px', sm:8, md:12, lg:16, pill:999 },
+      shadow: { light: { l1:'0 1px 2px rgba(26, 29, 51, .05)', l2:'0 -4px 12px rgba(26, 29, 51, .06)', edge:'0 0 0 0 transparent' },
+                dark:  { l1:'0 0 0 0 transparent', l2:'0 -4px 12px rgba(0, 0, 0, .35)', edge:'inset 0 1px 0 rgba(255, 255, 255, .06)' } }
+    },
+    note: 'Un único acento naranja de ocaso y la tipografía ancha como elemento memorable. "Pendiente" pasa a amarillo oliva para no confundirse con el naranja de la marca.'
+  }
+};
+const STATUS = {
+  light: { pending:['#FEF3C7','#8A3B0A'], approved:['#DCFCE7','#166534'], observed:['#EDE9FE','#5B21B6'], rejected:['#FEE2E2','#991B1B'], info:['#DBEAFE','#1E40AF'] },
+  dark:  { pending:['#3A2A08','#FCD34D'], approved:['#0B3B22','#86EFAC'], observed:['#2E1A5E','#C4B5FD'], rejected:['#4A1515','#FCA5A5'], info:['#172554','#93C5FD'] }
+};
+const FONTS = {
+  jakarta: { name:'Plus Jakarta Sans', stack:"'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif" },
+  outfit:  { name:'Outfit', stack:"'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif" },
+  manrope: { name:'Manrope', stack:"'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif" }
+};
+const RADII = {
+  sobrio:  { name:'Sobrias',   sm:4,  md:6,  lg:10, pill:6 },
+  suave:   { name:'Suaves',    sm:6,  md:12, lg:18, pill:999 },
+  redondo: { name:'Redondas',  sm:10, md:18, lg:26, pill:999 }
+};
+function pines(trees, base) {
+  return trees.map(([x, h]) => `M${x} ${base} L${x + h * .3} ${base - h * .5} L${x + h * .18} ${base - h * .5} L${x + h * .4} ${base - h} L${x + h * .62} ${base - h * .5} L${x + h * .5} ${base - h * .5} L${x + h * .8} ${base}Z`).join(' ');
+}
+function landscape(mode) {
+  const L = mode === 'light';
+  const C = L
+    ? { sky1:'#5FA8EC', sky2:'#BFE0F7', lake1:'#8DBBDF', lake2:'#5F95C1', cloud:'#FFFFFF', cloudOp:.85, far:'#8FA9CA', snowFar:'#F4F8FC', main:'#6787AE', snow:'#F7FAFD', reflect:'#B7D6EE', meadow:'#86A57C', pine:'#4A7766' }
+    : { sky1:'#060E26', sky2:'#1B2C58', lake1:'#16294C', lake2:'#0D1B36', cloud:'#8FA0C8', cloudOp:.18, far:'#22315A', snowFar:'#6F82A8', main:'#1B2A4D', snow:'#8496BC', reflect:'#9FB0DA', meadow:'#152534', pine:'#0D1824' };
+  const stars = L ? '' : [[30,40],[80,90],[140,30],[190,120],[250,60],[370,70],[60,210],[220,180],[390,150],[120,250]].map(([x, y], i) => `<circle cx='${x}' cy='${y}' r='${i % 3 ? 1 : 1.6}' fill='#E6ECFF' opacity='.75'/>`).join('');
+  const moon = L ? '' : `<circle cx='318' cy='118' r='44' fill='#E9EEFF' opacity='.07'/><circle cx='318' cy='118' r='17' fill='#E9EEFF'/>`;
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 800' preserveAspectRatio='xMidYMid slice'>
+<defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='${C.sky1}'/><stop offset='.55' stop-color='${C.sky2}'/></linearGradient>
+<linearGradient id='w' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='${C.lake1}'/><stop offset='1' stop-color='${C.lake2}'/></linearGradient>
+<filter id='b' x='-20%' y='-60%' width='140%' height='220%'><feGaussianBlur stdDeviation='7'/></filter></defs>
+<rect width='400' height='800' fill='url(#s)'/>${stars}${moon}
+<g fill='${C.cloud}' opacity='${C.cloudOp}' filter='url(#b)'><ellipse cx='300' cy='95' rx='95' ry='22'/><ellipse cx='70' cy='160' rx='75' ry='17'/><ellipse cx='360' cy='215' rx='60' ry='13'/></g>
+<path d='M0 430 L45 370 L75 388 L125 300 L155 330 L195 262 L235 318 L265 290 L305 338 L345 278 L400 336 L400 480 L0 480Z' fill='${C.far}'/>
+<path d='M125 300 L140 318 L131 323 L117 312Z M195 262 L214 290 L203 296 L190 285 L179 281Z M345 278 L361 298 L349 304 L335 291Z' fill='${C.snowFar}'/>
+<path d='M-10 480 L60 408 L110 338 L150 270 L176 238 L200 212 L224 238 L250 226 L282 266 L322 306 L362 356 L410 404 L410 490 L-10 490Z' fill='${C.main}'/>
+<path d='M150 270 L176 238 L200 212 L224 238 L250 226 L270 252 L252 268 L238 256 L224 276 L208 258 L192 280 L178 264 L164 282Z' fill='${C.snow}'/>
+<rect y='480' width='400' height='190' fill='url(#w)'/>
+<path d='M120 480 L200 560 L280 480Z' fill='${C.reflect}' opacity='.45'/>
+<path d='M0 650 Q110 615 205 646 T400 636 L400 800 L0 800Z' fill='${C.meadow}'/>
+<path d='${pines([[-6, 150], [24, 118], [52, 172], [86, 108]], 770)} ${pines([[296, 128], [326, 172], [358, 140], [384, 116]], 780)}' fill='${C.pine}'/>
+</svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}") center / cover no-repeat`;
+}
+
+const state = { palette:'cristal', mode:'light', glass:'on', font:'outfit', radius:'suave' };
+try { Object.assign(state, JSON.parse(localStorage.getItem('ew-style-lab-v2') || '{}')); } catch (e) {}
+if (!PALETTES[state.palette]) state.palette = 'cristal';
+if (!FONTS[state.font]) state.font = 'outfit';
+if (!RADII[state.radius]) state.radius = 'suave';
+
+const $ = (s) => document.querySelector(s);
+const stage = $('#stage');
+
+function hexToRgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+function blendHex(top, a, bottom) { const t = hexToRgb(top), b = hexToRgb(bottom); return '#' + t.map((v, i) => Math.round(a * v + (1 - a) * b[i]).toString(16).padStart(2, '0')).join('').toUpperCase(); }
+function rgba(h, a) { const [r, g, b] = hexToRgb(h); return `rgba(${r}, ${g}, ${b}, ${a})`; }
+function lum(h) { return hexToRgb(h).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }).reduce((s, v, i) => s + v * [.2126, .7152, .0722][i], 0); }
+function contrast(a, b) { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + .05) / (y + .05); }
+
+function buildControls() {
+  $('#palettes').innerHTML = Object.entries(PALETTES).map(([k, p]) => {
+    const sw = [p.light.primary, p.light.accent, p.light.bg, p.dark.bg, p.dark.primary].map(c => `<i style="background:${c}"></i>`).join('');
+    const kind = p.kind ? `<span class="pal-kind">${p.kind}</span>` : '';
+    return `<label class="pal"><input type="radio" name="palette" id="pal-${k}" value="${k}"><span class="pal-top"><span class="pal-name">${p.name}</span><span class="sw" aria-hidden="true">${sw}</span></span>${kind}<span class="pal-mood">${p.mood}</span></label>`;
+  }).join('');
+  $('#fonts').innerHTML = Object.entries(FONTS).map(([k, f]) => `<label style="font-family:${f.stack.replace(/"/g, '&quot;')}"><input type="radio" name="font" id="font-${k}" value="${k}">${f.name}</label>`).join('');
+  $('#radii').innerHTML = Object.entries(RADII).map(([k, r]) => `<label><input type="radio" name="radius" id="radius-${k}" value="${k}">${r.name}</label>`).join('');
+  for (const name of ['palette', 'mode', 'glass', 'font', 'radius']) {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+      inp.checked = inp.value === state[name];
+      inp.addEventListener('change', () => { state[name] = inp.value; apply(); });
+    });
+  }
+}
+
+function tokensFor(paletteKey, mode) {
+  const p = PALETTES[paletteKey], m = p[mode], st = Object.assign({}, STATUS[mode], p.status ? p.status[mode] : {});
+  return {
+    'bg': m.bg, 'surface': m.surface, 'surface-2': m.surface2, 'border': m.border, 'text': m.text, 'muted': m.muted,
+    'control-border': m.ctrl || m.border, 'chart': m.chart || m.primary,
+    'primary': m.primary, 'primary-hover': m.primaryHover, 'on-primary': m.onPrimary, 'accent': m.accent,
+    'pending-bg': st.pending[0], 'pending-fg': st.pending[1], 'approved-bg': st.approved[0], 'approved-fg': st.approved[1],
+    'observed-bg': st.observed[0], 'observed-fg': st.observed[1], 'rejected-bg': st.rejected[0], 'rejected-fg': st.rejected[1],
+    'info-bg': st.info[0], 'info-fg': st.info[1], 'neutral-bg': m.surface2, 'neutral-fg': m.muted
+  };
+}
+
+function apply() {
+  const p = PALETTES[state.palette], sys = p.system;
+  const t = tokensFor(state.palette, state.mode), light = state.mode === 'light';
+  const glass = !sys && state.glass === 'on';
+  const r = sys ? sys.radii : (p.radii || RADII[state.radius]);
+  const vars = {};
+  for (const [k, v] of Object.entries(t)) vars['--ew-' + k] = v;
+  Object.assign(vars, {
+    '--ew-glass': glass ? rgba(t.surface, light ? .62 : .5) : t.surface,
+    '--ew-glass-border': glass ? (light ? 'rgba(255, 255, 255, .55)' : 'rgba(255, 255, 255, .12)') : t.border,
+    '--ew-blur': glass ? 'blur(16px) saturate(150%)' : 'none',
+    '--ew-shadow': light ? '0 1px 2px rgba(16, 12, 30, .06), 0 10px 28px rgba(16, 12, 30, .10)' : '0 1px 2px rgba(0, 0, 0, .45), 0 12px 32px rgba(0, 0, 0, .40)',
+    '--ew-font': sys ? sys.body.stack : FONTS[state.font].stack,
+    '--ew-font-head': sys ? sys.head.stack : FONTS[state.font].stack,
+    '--ew-w-strong': sys ? sys.weights.strong : 700,
+    '--ew-w-title': sys ? sys.weights.title : 800,
+    '--ew-shadow-1': sys ? sys.shadow[state.mode].l1 : 'none',
+    '--ew-shadow-2': sys ? sys.shadow[state.mode].l2 : '0 8px 24px rgba(0, 0, 0, .08)',
+    '--ew-edge': sys ? sys.shadow[state.mode].edge : 'none',
+    '--ew-r-sm': r.sm + 'px', '--ew-r-md': r.md + 'px', '--ew-r-lg': r.lg + 'px', '--ew-r-pill': r.pill + 'px'
+  });
+  const gi = p.glassIntense ? p.glassIntense[state.mode] : null;
+  if (gi) Object.assign(vars, {
+    '--ew-glass': rgba(t.surface, gi.alpha), '--ew-glass-border': gi.border, '--ew-blur': gi.blur,
+    '--ew-glass-highlight': gi.highlight, '--ew-glass-shadow': gi.shadow,
+    '--ew-backdrop': p.style === 'frost' ? landscape(state.mode) : gi.backdrop
+  });
+  if (gi && p.style === 'frost') Object.assign(vars, {
+    '--ew-input-bg': gi.inputBg, '--ew-primary-gradient': gi.gradient, '--ew-primary-glow': gi.glow,
+    '--ew-active-bg': gi.activeBg, '--ew-active-fg': gi.activeFg
+  });
+  for (const [k, v] of Object.entries(vars)) stage.style.setProperty(k, v);
+  stage.dataset.glass = gi ? 'intense' : 'normal';
+  if (p.style) stage.dataset.glassStyle = p.style; else delete stage.dataset.glassStyle;
+  stage.dataset.system = sys ? 'product' : 'lab';
+  if (sys) stage.dataset.proposal = state.palette; else delete stage.dataset.proposal;
+  const locked = sys ? ['seg-glass', 'seg-font', 'seg-radius'] : (gi ? (p.radii ? ['seg-glass', 'seg-radius'] : ['seg-glass']) : []);
+  for (const id of ['seg-glass', 'seg-font', 'seg-radius']) {
+    const seg = document.getElementById(id), on = locked.includes(id);
+    seg.classList.toggle('locked', on);
+    seg.querySelectorAll('input').forEach(i => { i.disabled = on; });
+  }
+  $('#seg-lock').hidden = !locked.length;
+  $('#seg-lock').textContent = sys ? 'La propuesta elegida define el vidrio, la tipografía y las esquinas.'
+    : p.radii ? `${p.name} fija el vidrio y las esquinas; la tipografía sigue siendo elegible.`
+    : `${p.name} fija el vidrio en intenso; la tipografía y las esquinas siguen siendo elegibles.`;
+  for (const [k, v] of Object.entries(vars)) stage.style.setProperty(k, v);
+  stage.style.colorScheme = state.mode;
+  $('#palnote').innerHTML = `<strong>${p.name}.</strong> ${p.note}`;
+  drawChart(); drawContrast(t); drawCode();
+  try { localStorage.setItem('ew-style-lab-v2', JSON.stringify(state)); } catch (e) {}
+}
+
+function drawChart() {
+  const data = [6, 9, 8, 12, 16, 14, 19, 22, 18, 26, 30, 24, 34, 32];
+  const W = 220, H = 64, pad = 2, max = 34, bw = (W - pad * 2) / data.length;
+  const bars = data.map((v, i) => {
+    const h = (v / max) * (H - 6), x = pad + i * bw + 1.5, y = H - h;
+    const last = i === data.length - 1;
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw - 3).toFixed(1)}" height="${h.toFixed(1)}" rx="2" style="fill:var(${last ? '--ew-accent' : '--ew-chart'})"/>`;
+  }).join('');
+  $('#chart').innerHTML = `<line x1="0" y1="${H - .5}" x2="${W}" y2="${H - .5}" style="stroke:var(--ew-border)"/>` + bars;
+}
+
+function drawContrast(t) {
+  const pairs = [
+    ['Texto sobre fondo', t.text, t.bg, 4.5],
+    ['Texto secundario sobre superficie', t.muted, t.surface, 4.5],
+    ['Botón primario', t['on-primary'], t.primary, 4.5],
+    ['Enlace primario sobre superficie', t.primary, t.surface, 4.5],
+    ['Borde de campo sobre superficie', t['control-border'], t.surface, 3],
+    ['Barras del gráfico sobre superficie', t.chart, t.surface, 3],
+    ['Pendiente', t['pending-fg'], t['pending-bg'], 4.5],
+    ['Aprobado', t['approved-fg'], t['approved-bg'], 4.5],
+    ['En observación', t['observed-fg'], t['observed-bg'], 4.5],
+    ['Rechazado', t['rejected-fg'], t['rejected-bg'], 4.5]
+  ];
+  const cp = PALETTES[state.palette];
+  if (cp.glassIntense) {
+    const g = cp.glassIntense[state.mode], worstBackdrop = g.worst || blendHex(g.orb, g.orbAlpha, g.base), worstGlass = blendHex(t.surface, g.alpha, worstBackdrop);
+    pairs.push(['Texto sobre vidrio (peor caso)', t.text, worstGlass, 4.5],
+               ['Texto secundario sobre vidrio (peor caso)', t.muted, worstGlass, 4.5]);
+    if (!g.noBareText) pairs.push(['Título sobre el fondo sin panel (peor caso)', t.text, worstBackdrop, 3]);
+  }
+  $('#ctab tbody').innerHTML = pairs.map(([label, fg, bg, need]) => {
+    const c = contrast(fg, bg), ok = c >= need;
+    const verdict = need === 3 ? (ok ? 'Cumple (3:1)' : 'Bajo 3:1') : (ok ? 'Cumple' : 'No cumple');
+    return `<tr><td>${label}</td><td><span class="sample" style="color:${fg};background:${bg}">Aa 120 BOB</span></td><td>${c.toFixed(2)}:1</td><td class="${ok ? 'pass' : 'fail'}">${ok ? '✓' : '✗'} ${verdict}</td></tr>`;
+  }).join('');
+}
+
+function drawCode() {
+  const p = PALETTES[state.palette], sys = p.system;
+  const r = sys ? sys.radii : (p.radii || RADII[state.radius]), f = FONTS[state.font];
+  const block = (t) => Object.entries(t).map(([k, v]) => `  --color-${k}: ${v};`).join('\n');
+  const head = sys
+    ? `/* Event's World · propuesta ${p.name} · ${sys.head.name} + ${sys.body.name} · sin vidrio */`
+    : `/* Event's World · ${p.name} · ${f.name} · esquinas ${r.name.toLowerCase()} · vidrio ${p.style === 'frost' ? 'esmerilado' : p.glassIntense ? 'intenso' : (state.glass === 'on' ? 'moderado' : 'desactivado')} */`;
+  const typo = sys
+    ? `  --font-heading: ${sys.head.stack};
+  --font-body: ${sys.body.stack};
+  --font-weight-body: ${sys.weights.body};
+  --font-weight-strong: ${sys.weights.strong};
+  --font-weight-title: ${sys.weights.title};
+  --text-meta: 0.75rem;
+  --text-secondary: 0.875rem;
+  --text-body: 1rem;
+  --shadow-1: ${sys.shadow.light.l1};
+  --shadow-2: ${sys.shadow.light.l2};`
+    : `  --font-sans: ${f.stack};`;
+  const gl = p.glassIntense;
+  const glassLines = (m) => gl ? `\n  --glass-bg: ${rgba(tokensFor(state.palette, m).surface, gl[m].alpha)};\n  --glass-border: ${gl[m].border};\n  --glass-highlight: ${gl[m].highlight};\n  --glass-blur: ${gl[m].blur};\n  --glass-shadow: ${gl[m].shadow};\n  --backdrop: ${gl[m].backdrop || `url("illimani-${m === 'light' ? 'dia' : 'noche'}.svg") center / cover`};${gl[m].gradient ? `\n  --primary-gradient: ${gl[m].gradient};\n  --input-bg: ${gl[m].inputBg};\n  --active-bg: ${gl[m].activeBg};\n  --active-fg: ${gl[m].activeFg};` : ''}` : '';
+  const darkExtra = sys ? `\n  --shadow-1: ${sys.shadow.dark.l1};\n  --shadow-2: ${sys.shadow.dark.l2};\n  --shadow-edge: ${sys.shadow.dark.edge};` : '';
+  $('#code').textContent =
+`${head}
+:root {
+${typo}
+  --radius-sm: ${r.sm}px;
+  --radius-md: ${r.md}px;
+  --radius-lg: ${r.lg}px;
+  --radius-pill: ${r.pill}px;
+${block(tokensFor(state.palette, 'light'))}${glassLines('light')}
+}
+
+.dark {
+${block(tokensFor(state.palette, 'dark'))}${darkExtra}${glassLines('dark')}
+}`;
+}
+
+$('#copy').addEventListener('click', async () => {
+  const btn = $('#copy'), txt = $('#code').textContent;
+  try { await navigator.clipboard.writeText(txt); btn.textContent = 'Tokens copiados'; }
+  catch (e) { const sel = getSelection(), rg = document.createRange(); rg.selectNodeContents($('#code')); sel.removeAllRanges(); sel.addRange(rg); btn.textContent = 'Texto seleccionado: usa Ctrl+C'; }
+  setTimeout(() => { btn.textContent = 'Copiar tokens'; }, 2200);
+});
+
+buildControls();
+apply();
+</script>

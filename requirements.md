@@ -1,6 +1,6 @@
 # Event's World · Software Requirements Specification
 
-**Version:** 0.3 (draft for review) · **Date:** 24 Oct 2026 · open questions and proposals resolved
+**Version:** 0.5 (draft for review) · **Date:** 28 Oct 2026 · v0.3: open questions and proposals resolved · v0.4: NFR-01.1 styling (ADR-0007), NFR-01.3 private payment QR · v0.5: final visual style Salar Cristal (NFR-01.1, NFR-01.2, ADR-0008)
 **Changes since v0.1:** see [requirements-review.md](requirements-review.md). **Screens:** see `wireframes.excalidraw` (page IDs such as PUB-03 or ORG-08 are frame names there).
 
 ---
@@ -302,16 +302,31 @@ Access is managed with Role-Based Access Control (RBAC) at **two levels**: a glo
 
 ## NFR-01: User Interface, Experience, and Content Delivery (UI/UX & CDN)
 
-* **NFR-01.1 (Aesthetics and Hybrid CSS Approach):** The frontend will be developed in **Angular** using **TypeScript**, with a hybrid styling strategy:
+* **NFR-01.1 (Aesthetics, Styling and Components):** The frontend will be developed in **Angular** using **TypeScript**, with a single styling system and its own component library ([ADR-0007](architecture/adr/0007-styling-and-components.md)):
 
-  * **Tailwind CSS:** It will be used strictly for overall layout, grid system (Mobile First), backgrounds, typography, and to achieve the "Glassmorphism" visual pattern (translucent elements with background blur and subtle borders) in cards and main containers.
-  * **Angular Material:** It will be integrated exclusively to accelerate the development of complex functional components requiring high interactivity and accessibility, such as: MatDatepicker (event date selection), MatSelect/MatSlideToggle (extra field configuration), and MatDialog (modals for QR upload).
+  * **Tailwind CSS** is the only styling system: layout, grid (Mobile First), typography, colors and every component's look. It reads the design tokens (CSS variables) that define the light and dark themes.
+  * **Angular CDK** provides behavior and accessibility for complex components without imposing any look: dialogs and overlays, menus and drawers, focus management, drag and drop, data tables and clipboard.
+  * **Own component library** (`shared/ui`), built from the wireframe component library "00": buttons, inputs, badges, cards, stepper, dialogs, drawer, table, file drop zone, toasts and others.
+  * **Native inputs** for date-time and simple selects, because mobile operating systems provide the best pickers. Charts use a small library (Chart.js) loaded only on dashboards. Icons use Lucide.
+  * **Visual style: Salar Cristal** ([ADR-0008](architecture/adr/0008-salar-cristal-design-system.md); full specification in [design/design-system.md](design/design-system.md)), applied to **every view** in both light and dark modes:
+    * The Salar palette: sky blue primary, with a coral accent used sparingly.
+    * A fixed sky backdrop with blue and coral reflections behind the whole app.
+    * **Intense glassmorphism** on panels, bars and controls: translucent surfaces with strong background blur, light borders and a top highlight.
+    * Typeface **Outfit** (weights 400 / 600 / 700) and **soft corners** (6 / 12 / 18 px, pills for chips and status badges).
+    * The primary button, status badges, toasts, event covers and payment vouchers are never glass.
+  * **Glass guardrails:**
+    * Every text passes WCAG AA in the worst case of the glass over the backdrop.
+    * Glass turns into solid surfaces when the user prefers reduced transparency or the browser lacks `backdrop-filter`.
+    * Blur is applied to containers, not to individual rows; at most about 6 blurred layers are visible at once on mobile.
+    * Every release is tested on a low-end Android phone.
 
-* **NFR-01.2 (Responsive Design):** Mandatory "Mobile First" approach, assuming heavy mobile usage, with native Dark Mode support. Every view has a theme toggle (☾), and the choice follows the system preference by default.
+* **NFR-01.2 (Responsive Design):** Mandatory "Mobile First" approach, assuming heavy mobile usage, with native Dark Mode support. Light and dark themes are both part of the Salar Cristal system (design-system.md). Every view has a theme toggle (☾), and the choice follows the system preference by default.
 
 * **NFR-01.3 (CDN & Media Storage):** **Cloudflare R2** will be used for user-uploaded media, split into two buckets:
   * **Public bucket:** event covers and other public assets, served through the CDN.
-  * **Private bucket:** payment vouchers and refund proofs. They are **never** public: the backend authorizes each request and returns a signed URL valid for a few minutes.
+  * **Private bucket:** payment vouchers, refund proofs and **the organizers' payment QR images**. They are **never** public: the backend authorizes each request and returns a signed URL valid for a few minutes, served with `Cache-Control: private, no-store`.
+  * The payment QR contains bank data. It is shown only inside the registration form (PUB-03) and the in-person payment flow (ORG-09), never in public listings or Open Graph previews.
+  * Uploads go through the backend, which validates type (by magic bytes) and size before storing the file. Expired files are deleted according to FR-08.4. See `architecture/database.md` §3.5.
 
 * **NFR-01.4 (Language):** The MVP interface is in Spanish. The frontend is built ready for translation; language selection is `[Next]`.
 

@@ -1,92 +1,92 @@
-# Sistema de diseño de Event's World · Salar Cristal
+# Event's World Design System · Salar Cristal
 
-* **Versión:** 1.0 · **Fecha:** 28 oct 2026 · **Estado:** decisión final
-* **Decisión:** [ADR-0008](../architecture/adr/0008-salar-cristal-design-system.md). Mantiene la base técnica de [ADR-0007](../architecture/adr/0007-styling-and-components.md): Tailwind CSS v4 + Angular CDK + componentes propios.
-* **Requisitos:** NFR-01.1 y NFR-01.2 de [requirements.md](../requirements.md).
-* **Referencia visual:** opción "Salar Cristal" del [laboratorio de estilos](style-lab.html), con tipografía Outfit y esquinas suaves.
+* **Version:** 1.0 · **Date:** Oct 28, 2026 · **Status:** Final decision
+* **Decision:** [ADR-0008](../architecture/adr/0008-salar-cristal-design-system.md). Retains the technical foundation of [ADR-0007](../architecture/adr/0007-styling-and-components.md): Tailwind CSS v4 + Angular CDK + custom components.
+* **Requirements:** NFR-01.1 and NFR-01.2 from [requirements.md](../requirements.md).
+* **Visual reference:** "Salar Cristal" option from the [style lab](style-lab.html), with Outfit typography and soft corners.
 
-Este documento es la **fuente única** de colores, tipografía, superficies y reglas visuales de **todas las vistas** de la app: públicas, participante, autenticación, organizador y Super Admin, en modo claro y oscuro.
-
----
-
-## 1. Concepto
-
-**Salar Cristal** se inspira en el Salar de Uyuni: un cielo azul que se refleja en el suelo y la luz coral del atardecer.
-
-* **Superficies:** toda la interfaz flota en **paneles de vidrio translúcido** sobre un fondo de cielo con reflejos azules y coral.
-* **Marca:** el azul transmite confianza en los pagos, y el coral aparece solo como acento puntual.
-* **Equilibrio:** el vidrio es intenso y visible, pero cada texto se verifica en el **peor caso** de contraste (§6).
+This document serves as the **single source of truth** for colors, typography, surfaces, and visual rules across **all views** of the application: public, attendee, authentication, organizer, and Super Admin, in both light and dark mode.
 
 ---
 
-## 2. Colores
+## 1. Concept
 
-### 2.1 Tokens semánticos
+**Salar Cristal** is inspired by the Salar de Uyuni: an expanse of blue sky reflected on the ground and the coral light of dusk.
 
-| Token | Claro | Oscuro | Uso |
+* **Surfaces:** The entire interface floats on **translucent glass panels** over a sky backdrop with blue and coral highlights.
+* **Brand:** Blue conveys confidence in payments, while coral appears exclusively as a selective accent.
+* **Balance:** Glass is prominent and visible, but all text is verified against the **worst-case** contrast scenario (§6).
+
+---
+
+## 2. Colors
+
+### 2.1 Semantic Tokens
+
+| Token | Light | Dark | Usage |
 |---|---|---|---|
-| `bg` | `#E6F0FB` | `#0A121C` | Color base del fondo de cielo (§4) |
-| `surface` | `#FFFFFF` | `#111C29` | Superficie sólida; base del vidrio y del modo "reducir transparencia" |
-| `surface-2` | `#EBF1F7` | `#182638` | Superficie secundaria sólida (estados neutros) |
-| `border` | `#D3DEE9` | `#28394F` | Borde sutil sobre superficies sólidas |
-| `control-border` | `#5A6B80` | `#7F95B0` | Borde de campos y controles (≥ 3:1) |
-| `text` | `#0E1B2A` | `#EAF2FA` | Texto principal |
-| `muted` | `#3E5367` | `#9AB0C6` | Texto secundario |
-| `primary` | `#0B63B6` | `#5AB0FF` | Botón principal, enlaces, foco, selección activa |
-| `primary-hover` | `#09528F` | `#84C4FF` | Hover y presionado |
-| `on-primary` | `#FFFFFF` | `#04192E` | Texto sobre `primary` |
-| `accent` | `#E5533B` | `#FF8A73` | Acento coral puntual: dato destacado del gráfico, avatar. **Nunca** botones, fondos ni texto |
-| `chart` | `#0B63B6` | `#5AB0FF` | Barras y series del gráfico |
+| `bg` | `#E6F0FB` | `#0A121C` | Base color of the sky backdrop (§4) |
+| `surface` | `#FFFFFF` | `#111C29` | Solid surface; foundation for glass and "reduce transparency" mode |
+| `surface-2` | `#EBF1F7` | `#182638` | Secondary solid surface (neutral states) |
+| `border` | `#D3DEE9` | `#28394F` | Subtle border on solid surfaces |
+| `control-border` | `#5A6B80` | `#7F95B0` | Border for input fields and controls (≥ 3:1) |
+| `text` | `#0E1B2A` | `#EAF2FA` | Primary text |
+| `muted` | `#3E5367` | `#9AB0C6` | Secondary text |
+| `primary` | `#0B63B6` | `#5AB0FF` | Primary button, links, focus, active selection |
+| `primary-hover` | `#09528F` | `#84C4FF` | Hover and pressed states |
+| `on-primary` | `#FFFFFF` | `#04192E` | Text on `primary` |
+| `accent` | `#E5533B` | `#FF8A73` | Selective coral accent: highlighted chart data, avatar. **Never** for buttons, backgrounds, or text |
+| `chart` | `#0B63B6` | `#5AB0FF` | Chart bars and series |
 
-### 2.2 Estados (pagos y eventos)
+### 2.2 Statuses (Payments and Events)
 
-Son fijos: el color nunca cambia de significado entre pantallas. Se muestran siempre con **texto y un punto de color**, nunca solo con color (WCAG 1.4.1). Los badges son **sólidos**, no de vidrio.
+These are fixed: color meaning never changes across screens. They are always presented with **text and a colored dot**, never through color alone (WCAG 1.4.1). Badges are **solid**, not glass.
 
-| Estado | Claro (texto / fondo) | Oscuro (texto / fondo) |
+| Status | Light (text / background) | Dark (text / background) |
 |---|---|---|
-| Pendiente · Inscripciones cerradas | `#8A3B0A` / `#FEF3C7` | `#FCD34D` / `#3A2A08` |
-| Aprobado · Publicado | `#166534` / `#DCFCE7` | `#86EFAC` / `#0B3B22` |
-| En observación | `#5B21B6` / `#EDE9FE` | `#C4B5FD` / `#2E1A5E` |
-| Rechazado · Suspendido · Cancelado | `#991B1B` / `#FEE2E2` | `#FCA5A5` / `#4A1515` |
-| Finalizado (info) | `#1E40AF` / `#DBEAFE` | `#93C5FD` / `#172554` |
-| Sin pago · Borrador (neutro) | `muted` / `surface-2` | `muted` / `surface-2` |
+| Pending · Registration closed | `#8A3B0A` / `#FEF3C7` | `#FCD34D` / `#3A2A08` |
+| Approved · Published | `#166534` / `#DCFCE7` | `#86EFAC` / `#0B3B22` |
+| Under review | `#5B21B6` / `#EDE9FE` | `#C4B5FD` / `#2E1A5E` |
+| Rejected · Suspended · Cancelled | `#991B1B` / `#FEE2E2` | `#FCA5A5` / `#4A1515` |
+| Completed (info) | `#1E40AF` / `#DBEAFE` | `#93C5FD` / `#172554` |
+| Unpaid · Draft (neutral) | `muted` / `surface-2` | `muted` / `surface-2` |
 
 ---
 
-## 3. Vidrio
+## 3. Glass
 
-### 3.1 Niveles
+### 3.1 Levels
 
-| Nivel | Dónde | Claro | Oscuro |
+| Level | Where | Light | Dark |
 |---|---|---|---|
-| **Panel** | Tarjetas, tablas, mosaicos, menú lateral, hoja del detalle, campos, chips, botones secundarios | `rgba(255, 255, 255, .50)` | `rgba(17, 28, 41, .45)` |
-| **Barra** | Barra superior y barras fijas (inscripción, acciones), barra inferior móvil | Igual que el panel | Igual que el panel |
-| **Overlay** | Modales, drawers (menú ☰), menús emergentes | `rgba(255, 255, 255, .72)` + fondo atenuado `rgba(10, 18, 28, .35)` | `rgba(17, 28, 41, .72)` + fondo atenuado `rgba(0, 0, 0, .55)` |
+| **Panel** | Cards, tables, tiles, sidebar, detail sheet, fields, chips, secondary buttons | `rgba(255, 255, 255, .50)` | `rgba(17, 28, 41, .45)` |
+| **Bar** | Top bar, sticky action bars (registration, actions), mobile bottom bar | Same as panel | Same as panel |
+| **Overlay** | Modals, drawers (☰ menu), popup menus | `rgba(255, 255, 255, .72)` + dimmed backdrop `rgba(10, 18, 28, .35)` | `rgba(17, 28, 41, .72)` + dimmed backdrop `rgba(0, 0, 0, .55)` |
 
-### 3.2 Propiedades comunes
+### 3.2 Common Properties
 
-| Propiedad | Claro | Oscuro |
+| Property | Light | Dark |
 |---|---|---|
-| Desenfoque | `blur(22px) saturate(180%)` | `blur(22px) saturate(160%)` |
-| Borde (1 px) | `rgba(255, 255, 255, .72)` | `rgba(255, 255, 255, .16)` |
-| Brillo superior | `inset 0 1px 0 rgba(255, 255, 255, .85)` | `inset 0 1px 0 rgba(255, 255, 255, .14)` |
-| Sombra | `0 10px 30px rgba(14, 27, 42, .14)` | `0 10px 30px rgba(0, 0, 0, .45)` |
+| Blur | `blur(22px) saturate(180%)` | `blur(22px) saturate(160%)` |
+| Border (1 px) | `rgba(255, 255, 255, .72)` | `rgba(255, 255, 255, .16)` |
+| Top highlight | `inset 0 1px 0 rgba(255, 255, 255, .85)` | `inset 0 1px 0 rgba(255, 255, 255, .14)` |
+| Shadow | `0 10px 30px rgba(14, 27, 42, .14)` | `0 10px 30px rgba(0, 0, 0, .45)` |
 
-### 3.3 Qué NO es vidrio
+### 3.3 What is NOT Glass
 
-* **Botón principal:** `primary` sólido, con sombra de su propio color (`0 6px 18px` de `primary` al 35 %).
-* **Badges de estado:** sólidos (§2.2).
-* **Portadas de eventos y comprobantes:** son imágenes, nunca se desenfocan.
-* **Textos largos** (términos y privacidad, PUB-07): van en un panel de nivel overlay, porque es más opaco.
+* **Primary button:** Solid `primary`, with a shadow cast in its own color (`0 6px 18px` of `primary` at 35%).
+* **Status badges:** Solid (§2.2).
+* **Event covers and receipts:** Images; never blurred.
+* **Long-form text** (terms and privacy, PUB-07): Uses an overlay-level panel due to its higher opacity.
 
 ---
 
-## 4. Fondo de cielo
+## 4. Sky Backdrop
 
-Va detrás de toda la app, fijo (no se desplaza con el contenido), para que el vidrio muestre movimiento al hacer scroll.
+Placed behind the entire application, fixed in place (does not scroll with content), allowing the glass to reveal motion during scrolling.
 
 ```css
-/* Claro */
+/* Light */
 --backdrop:
   radial-gradient(42% 30% at 10% 6%,  rgba(11, 99, 182, .45), transparent 70%),
   radial-gradient(40% 30% at 94% 22%, rgba(229, 83, 59, .42), transparent 72%),
@@ -94,7 +94,7 @@ Va detrás de toda la app, fijo (no se desplaza con el contenido), para que el v
   radial-gradient(40% 28% at 86% 92%, rgba(229, 83, 59, .30), transparent 70%),
   linear-gradient(180deg, #E6F0FB, #F6EEEC);
 
-/* Oscuro */
+/* Dark */
 --backdrop:
   radial-gradient(42% 30% at 10% 6%,  rgba(90, 176, 255, .45), transparent 70%),
   radial-gradient(40% 30% at 94% 22%, rgba(255, 138, 115, .30), transparent 72%),
@@ -103,94 +103,94 @@ Va detrás de toda la app, fijo (no se desplaza con el contenido), para que el v
   linear-gradient(180deg, #08172A, #0A121C);
 ```
 
-* Se pinta en un `body::before` con `position: fixed`, porque `background-attachment: fixed` no funciona en Safari de iOS.
-* Las manchas de color no deben superponerse más que en el diseño: el contraste del §6 se calculó con la mancha más intensa sola.
+* Rendered on a `body::before` pseudo-element with `position: fixed`, as `background-attachment: fixed` is unreliable in iOS Safari.
+* Color gradients must not overlap beyond design specifications: worst-case contrast in §6 was calculated against the single most intense gradient spot.
 
 ---
 
-## 5. Tipografía, espaciado y formas
+## 5. Typography, Spacing, and Shapes
 
-### 5.1 Tipografía
+### 5.1 Typography
 
-* **Familia única:** **Outfit** (Google Fonts), con la pila de respaldo `'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif`. Se cargan solo los pesos 400, 600 y 700, con `display=swap`.
-* **Pesos:**
+* **Single font family:** **Outfit** (Google Fonts), with fallback stack `'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif`. Only weights 400, 600, and 700 are loaded, using `display=swap`.
+* **Weights:**
 
-  | Peso | Uso |
+  | Weight | Usage |
   |---|---|
-  | 400 | Cuerpo |
-  | 600 | Etiquetas, botones, nombres, encabezados de tabla |
-  | 700 | Títulos y cifras |
+  | 400 | Body text |
+  | 600 | Labels, buttons, names, table headers |
+  | 700 | Headings and metrics |
 
-  Ningún peso supera 700. El laboratorio mostraba algunos títulos más gruesos; en la implementación se limitan a 700, según la skill de tipografía.
-* **Escala Minor Third (1,2):**
+  No font weight exceeds 700. The style lab displayed some heavier headings; in implementation they are capped at 700, adhering to the typography skill guideline.
+* **Minor Third Scale (1.2):**
 
-| Rol | Tamaño | Peso | Interlineado | Ejemplos |
+| Role | Size | Weight | Line Height | Examples |
 |---|---|---|---|---|
-| Meta | 12 px (0,75 rem) | 400 | 1,4 | Horas, códigos bajo un nombre, ayudas |
-| Secundario | 14 px (0,875 rem) | 400 / 600 | 1,5 | Celdas de tabla, etiquetas de campo, badges |
-| Cuerpo | 16 px (1 rem) | 400 | 1,55 | Descripción, valores de campos, botones |
-| Subtítulo | 19,2 px (1,2 rem) | 600 | 1,25 | Precio en la barra, títulos de tarjeta |
-| Título de página | 23 px (1,44 rem) | 700 | 1,2 | "Revisión de pagos", KPIs |
-| Título de evento | 27,6 px (1,728 rem) | 700 | 1,15 | PUB-02 |
-| Display | 33,2 px (2,074 rem) | 700 | 1,1 | Inicio (PUB-01), escritorio |
+| Meta | 12 px (0.75 rem) | 400 | 1.4 | Timestamps, IDs under names, helper text |
+| Secondary | 14 px (0.875 rem) | 400 / 600 | 1.5 | Table cells, field labels, badges |
+| Body | 16 px (1 rem) | 400 | 1.55 | Descriptions, input field values, buttons |
+| Subtitle | 19.2 px (1.2 rem) | 600 | 1.25 | Price in bar, card titles |
+| Page title | 23 px (1.44 rem) | 700 | 1.2 | "Payment review", KPIs |
+| Event title | 27.6 px (1.728 rem) | 700 | 1.15 | PUB-02 |
+| Display | 33.2 px (2.074 rem) | 700 | 1.1 | Home (PUB-01), desktop |
 
-  Ningún texto baja de 12 px. Las cifras usan `font-variant-numeric: tabular-nums`.
+  No text falls below 12 px. Numerical values use `font-variant-numeric: tabular-nums`.
 
-### 5.2 Espaciado
+### 5.2 Spacing
 
-* Ritmo de **4/8 px**: `4, 8, 12, 16, 24, 32, 48`.
-* Margen lateral de 16 px en el celular.
-* Separación entre paneles de 12–16 px.
+* **4/8 px rhythm:** `4, 8, 12, 16, 24, 32, 48`.
+* 16 px lateral page margins on mobile.
+* 12–16 px gap between panels.
 
-### 5.3 Esquinas suaves
+### 5.3 Soft Corners
 
-| Token | Valor | Uso |
+| Token | Value | Usage |
 |---|---|---|
-| `radius-sm` | 6 px | Campos, badges pequeños |
-| `radius-md` | 12 px | Botones, mosaicos, chips cuadrados |
-| `radius-lg` | 18 px | Paneles, tarjetas, hoja del detalle, modales |
-| `radius-pill` | 999 px | Chips de filtro y badges de estado |
+| `radius-sm` | 6 px | Fields, compact badges |
+| `radius-md` | 12 px | Buttons, tiles, square chips |
+| `radius-lg` | 18 px | Panels, cards, detail sheets, modals |
+| `radius-pill` | 999 px | Filter chips and status badges |
 
-### 5.4 Foco, íconos y movimiento
+### 5.4 Focus, Icons, and Motion
 
-* **Foco:** anillo de 2 px en `primary`, separado 2 px del elemento (`outline-offset`), visible en vidrio y en sólido.
-* **Íconos:** Lucide, de 20 px (o 24 px en la barra móvil), con trazo de 1,75. Sin íconos decorativos dentro de los campos; solo la lupa en la búsqueda.
-* **Movimiento:** solo transiciones de color y opacidad de 150 ms. **Nunca** animar un elemento con desenfoque. Con `prefers-reduced-motion`, todo se vuelve instantáneo.
+* **Focus:** 2 px ring in `primary` with a 2 px separation from the element (`outline-offset`), clearly visible on both glass and solid surfaces.
+* **Icons:** Lucide, 20 px (or 24 px in the mobile navigation bar), with a 1.75 stroke. No decorative icons inside form fields; only the magnifying glass in search.
+* **Motion:** Color and opacity transitions only, restricted to 150 ms. **Never** animate an element with a blur filter. With `prefers-reduced-motion`, all transitions become instantaneous.
 
 ---
 
-## 6. Accesibilidad y contraste
+## 6. Accessibility and Contrast
 
-El contraste sobre vidrio depende de lo que hay detrás, así que cada par se verifica en el **peor caso**: el vidrio sobre la mancha más oscura del fondo (en claro) o la más brillante (en oscuro).
+Contrast over glass depends on underlying elements, so every pair is verified against the **worst-case scenario**: glass positioned over the darkest backdrop patch (in light mode) or the brightest patch (in dark mode).
 
-| Par | Claro | Oscuro | Requerido |
+| Pair | Light | Dark | Required |
 |---|---|---|---|
-| Texto sobre vidrio (peor caso) | 11,85 | 9,77 | 4,5 |
-| Texto secundario sobre vidrio (peor caso) | 5,43 | 4,94 | 4,5 |
-| Borde de campo sobre vidrio (peor caso) | 3,72 | 3,59 | 3 |
-| Título grande directamente sobre el fondo (peor caso) | 7,68 | 6,48 | 3 |
-| Botón principal | 6,04 | 7,68 | 4,5 |
-| Estados (§2.2) | 6,49–7,57 | 7,85–9,62 | 4,5 |
+| Text on glass (worst case) | 11.85 | 9.77 | 4.5 |
+| Secondary text on glass (worst case) | 5.43 | 4.94 | 4.5 |
+| Field border on glass (worst case) | 3.72 | 3.59 | 3 |
+| Large heading directly on backdrop (worst case) | 7.68 | 6.48 | 3 |
+| Primary button | 6.04 | 7.68 | 4.5 |
+| Statuses (§2.2) | 6.49–7.57 | 7.85–9.62 | 4.5 |
 
-**Reglas:**
+**Rules:**
 
-1. Todo texto de tamaño normal va sobre vidrio o sobre una superficie sólida. Solo los títulos grandes pueden ir directamente sobre el fondo.
-2. Con `prefers-reduced-transparency: reduce`, y en navegadores sin `backdrop-filter` (`@supports not`), todo el vidrio pasa a `surface` sólido con borde `border`.
-3. Las áreas táctiles miden al menos **44 × 44 px** en pantallas táctiles (`pointer: coarse`).
-4. Cualquier cambio de color, de opacidad o del fondo exige recalcular el peor caso con el laboratorio.
-
----
-
-## 7. Rendimiento (importante para celulares de gama media y baja)
-
-* **Desenfoque en contenedores, no en cada elemento:** la tabla es un panel de vidrio; sus filas, no.
-* **Límite:** como máximo **6 capas con desenfoque** visibles a la vez en el celular.
-* **Sin cambios de tamaño ni posición animados** en paneles de vidrio, y nunca `will-change` permanente.
-* **Prueba obligatoria:** antes de cada versión, en un Android de gama baja con Chrome. Si el desplazamiento baja de unos 50 cuadros por segundo, se reduce el desenfoque a `blur(14px)` en esa pantalla.
+1. All standard-sized text must be placed on glass or on a solid surface. Only large headings may sit directly on the background.
+2. Under `prefers-reduced-transparency: reduce`, and on browsers without `backdrop-filter` support (`@supports not`), all glass falls back to solid `surface` with a `border` stroke.
+3. Interactive touch targets measure at least **44 × 44 px** on touch devices (`pointer: coarse`).
+4. Any adjustment to color, opacity, or the background requires recalculating the worst-case scenario in the style lab.
 
 ---
 
-## 8. Implementación en Angular (Tailwind v4)
+## 7. Performance (Crucial for Mid- and Low-End Mobile Devices)
+
+* **Apply blur to containers, not individual elements:** The table is a glass panel; individual rows are not.
+* **Limit:** At most **6 blurred layers** visible simultaneously on mobile.
+* **No animated resize or reposition operations** on glass panels, and never apply permanent `will-change`.
+* **Mandatory release testing:** Prior to every release, test on a low-end Android device using Chrome. If scroll performance drops below ~50 fps, blur must be reduced to `blur(14px)` on that screen.
+
+---
+
+## 8. Implementation in Angular (Tailwind v4)
 
 `src/styles.css` (frontend.md §7):
 
@@ -204,7 +204,7 @@ El contraste sobre vidrio depende de lo que hay detrás, así que cada par se ve
   --ew-glass: rgba(255, 255, 255, .50); --ew-glass-overlay: rgba(255, 255, 255, .72);
   --ew-glass-border: rgba(255, 255, 255, .72); --ew-glass-highlight: rgba(255, 255, 255, .85);
   --ew-glass-shadow: 0 10px 30px rgba(14, 27, 42, .14); --ew-blur: blur(22px) saturate(180%);
-  /* + --ew-backdrop (§4) y los estados (§2.2) */
+  /* + --ew-backdrop (§4) and statuses (§2.2) */
 }
 .dark {
   --ew-bg: #0A121C; --ew-surface: #111C29; --ew-surface-2: #182638; --ew-border: #28394F; --ew-control-border: #7F95B0;
@@ -244,36 +244,36 @@ body { font-family: var(--font-sans); color: var(--ew-text); background: var(--e
 body::before { content: ""; position: fixed; inset: 0; z-index: -1; background: var(--ew-backdrop); }
 ```
 
-El bloque "Tokens de la combinación elegida" del laboratorio (opción Salar Cristal) genera los valores exactos de `:root` y `.dark`.
+The "Tokens of selected combination" section from the style lab (Salar Cristal option) generates the exact `:root` and `.dark` values.
 
 ---
 
-## 9. Aplicación por componente (`shared/ui`)
+## 9. Component Breakdown (`shared/ui`)
 
-| Componente | Superficie | Detalle |
+| Component | Surface | Details |
 |---|---|---|
-| Barra superior y barra inferior móvil | `glass` (barra) | Fija; borde inferior o superior de vidrio |
-| Panel, tarjeta, KPI, mosaico | `glass` | `radius-lg` (mosaicos: `radius-md`) |
-| Tabla y lista | Un solo `glass` para todo el bloque | Divisores con `glass-border`. Fila seleccionada: `primary` al 14 % y barra lateral de 3 px en `primary` |
-| Campo de texto y select nativo | `glass` | Borde `control-border`; foco con anillo `primary` |
-| Botón principal | `primary` sólido | `radius-md`, peso 600, sombra de color |
-| Botón secundario | `glass` | Texto `text` |
-| Aprobar, Observar, Rechazar | Color de estado sólido | Nunca vidrio |
-| Chip de filtro | `glass`; el activo es `primary` sólido | `radius-pill` |
-| Badge de estado | Sólido (§2.2) | `radius-pill`, punto de color y texto |
-| Modal y drawer (☰) | `glass-overlay` + fondo atenuado | Foco atrapado; Escape cierra (CDK `Dialog`) |
-| Toast | `text` sólido sobre `bg` | Sin vidrio, para que se lea siempre |
-| Portada de evento | Imagen | La hoja del detalle se superpone 28 px |
-| Comprobante (ORG-08) | Imagen sobre `surface` sólido | Sin desenfoque; texto alternativo obligatorio |
+| Top bar and mobile bottom bar | `glass` (bar) | Fixed; glass bottom or top border |
+| Panel, card, KPI, tile | `glass` | `radius-lg` (tiles: `radius-md`) |
+| Table and list | Single `glass` for the entire block | Dividers with `glass-border`. Selected row: `primary` at 14% and a 3 px lateral indicator in `primary` |
+| Text field and native select | `glass` | Border `control-border`; focus with `primary` ring |
+| Primary button | Solid `primary` | `radius-md`, weight 600, colored shadow |
+| Secondary button | `glass` | Font color `text` |
+| Approve, Observe, Reject | Solid status color | Never glass |
+| Filter chip | `glass`; active item is solid `primary` | `radius-pill` |
+| Status badge | Solid (§2.2) | `radius-pill`, colored dot, and text |
+| Modal and drawer (☰) | `glass-overlay` + dimmed backdrop | Trapped focus; Escape closes (CDK `Dialog`) |
+| Toast | Solid `text` on `bg` | No glass, ensuring immediate readability at all times |
+| Event cover | Image | Detail sheet overlaps by 28 px |
+| Receipt (ORG-08) | Image on solid `surface` | No blur; descriptive alt text mandatory |
 
 ---
 
-## 10. Excepciones a las skills de UI/UX
+## 10. Exceptions to UI/UX Skills
 
-Este sistema contradice a propósito una regla de `vectorlab-ux-skills:anti-slop`: el vidrio en la UI del producto (S3, S4 y S15). Es una **decisión de marca** del equipo, registrada en ADR-0008. Cumple las condiciones que la misma skill pide si se usa vidrio:
+This design system intentionally diverges from a rule in `vectorlab-ux-skills:anti-slop`: glass in product UI (S3, S4, and S15). This is an explicit **brand decision** made by the team, recorded in ADR-0008. It satisfies the conditions outlined by the same skill when using glass:
 
-* un límite visible;
-* un respaldo opaco;
-* contraste suficiente, verificado en el peor caso.
+* a visible boundary;
+* an opaque fallback;
+* sufficient contrast, validated against the worst-case scenario.
 
-Todas las demás reglas de las skills siguen vigentes: un solo acento interactivo, 3 pesos, tamaños de 12/14/16 px y verbos claros en los botones.
+All other skill rules remain active: a single interactive accent, 3 weights, 12/14/16 px font sizes, and unambiguous action verbs on buttons.
